@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  backend:
+    image: chamikaravinda/node-boilerplate-backend:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=localhost
+      - HOST_URL=http://localhost:3000
+      - JWT_SECRET="dsada03421fw"
+
+  frontend:
+    image: chamikaravinda/react-boilerplate-frontend:latest
+    ports:
+      - "5173:80"
+    networks:
+      - app-network
+    environment:
+      - VITE_FIREBASE_API_KEY=AIzaSyArkaNaC3I4JDT-5iyxmwuqMAUI5eIOA80
+    depends_on:
+      - backend
+
+
+networks:
+  app-network:
+    driver: bridge
