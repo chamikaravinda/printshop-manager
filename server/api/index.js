@@ -4,7 +4,7 @@ import authRoutes from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import config from "./config/config.js";
 import { initializeApp, cert } from "firebase-admin/app";
-import serviceAccount from "../next-node-boilerplate-firebase-adminsdk-y5kab-24ce53b677.json" assert { type: "json" };
+import serviceAccount from "../dulangi-enterprises-firebase-adminsdk-fbsvc-fa12c6bf41.json" assert { type: "json" };
 
 const app = express();
 

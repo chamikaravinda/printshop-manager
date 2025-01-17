@@ -11,6 +11,7 @@ import {
   signOut,
 } from "../actions/user.action.js";
 import TwoOptionModel from "../components/TwoOptionModel.jsx";
+import { primary_gradient } from "../utils/commonConstants.js";
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -152,7 +153,7 @@ export default function Profile() {
         />
         <Button
           type="submit"
-          gradientDuoTone="purpleToBlue"
+          className={primary_gradient}
           outline
           disabled={imageFileUploadProgress}
         >

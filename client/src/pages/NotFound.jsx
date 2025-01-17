@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "flowbite-react";
+import { primary_gradient } from "../utils/commonConstants";
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
           404
         </h1>
         <Link to="/">
-          <Button type="submit" gradientDuoTone="purpleToBlue" outline>
+          <Button type="submit" className={primary_gradient} outline>
             Back to Home
           </Button>
         </Link>

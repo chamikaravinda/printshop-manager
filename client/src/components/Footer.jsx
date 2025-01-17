@@ -12,7 +12,7 @@ export default function FooterComponent() {
   return (
     <Footer
       container
-      className="border border-t-8 border-teal-500 footer-border"
+      className="border border-t-8 border-[#92226d] footer-border"
     >
       <div className="w-full max-w-7xl mx-auto">
         <div className="grid w-full justify-between sm:flex md:grid-cols-1">
@@ -21,10 +21,7 @@ export default function FooterComponent() {
               to="/"
               className="self-center whitespace-nowrap text-lg sm:text-xl font-semibold dark:text-white"
             >
-              <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-                Zigmatron&apos;s
-              </span>
-              Template
+              <img className="h-35 w-48" src="/logo.png" />
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-8 mt-4 sm:grid-cols-3 sm:gap-6">
@@ -32,13 +29,10 @@ export default function FooterComponent() {
               <Footer.Title title="About" />
               <Footer.LinkGroup>
                 <Footer.Link href="" target="_blank" rel="noopener noreferrer">
-                  Izigma Blockchain
+                  Products
                 </Footer.Link>
                 <Footer.Link href="" target="_blank" rel="noopener noreferrer">
-                  About
-                </Footer.Link>
-                <Footer.Link href="" target="_blank" rel="noopener noreferrer">
-                  Izigma Blockchain
+                  Contact Us
                 </Footer.Link>
               </Footer.LinkGroup>
             </div>
@@ -46,10 +40,10 @@ export default function FooterComponent() {
               <Footer.Title title="Follow Us" />
               <Footer.LinkGroup>
                 <Footer.Link href="" target="_blank" rel="noopener noreferrer">
-                  Github
+                  Facebook
                 </Footer.Link>
                 <Footer.Link href="" target="_blank" rel="noopener noreferrer">
-                  Linkdin
+                  Tiktok
                 </Footer.Link>
               </Footer.LinkGroup>
             </div>

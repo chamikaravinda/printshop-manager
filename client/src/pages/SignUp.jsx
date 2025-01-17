@@ -8,6 +8,7 @@ import {
   dispatchSuccess,
 } from "../actions/notifications.action";
 import { userSingUp } from "../actions/auth.action.js";
+import { primary_gradient } from "../utils/commonConstants.js";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -45,16 +46,10 @@ export default function SignUp() {
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
         {/* left */}
-        <div className="flex-1">
-          <Link to="/" className="font-bold dark:text-white text-4xl">
-            <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              Zigmatron&apos;s
-            </span>
-            Template
+        <div className="flex-1 mx-auto items-center">
+          <Link to="/">
+          <img src = "./logo-portrait.png" className="md:h-72 md:w-72 h-52 w-52"/>
           </Link>
-          <p className="text-sm mt-5">
-            This is the sign up page for the template
-          </p>
         </div>
         {/* right */}
         <div className="flex-1">
@@ -86,7 +81,7 @@ export default function SignUp() {
                 onChange={handleChange}
               />
             </div>
-            <Button gradientDuoTone="purpleToPink" type="submit">
+            <Button className={primary_gradient} type="submit">
               Sign Up
             </Button>
             <OAuth />

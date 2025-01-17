@@ -5,12 +5,12 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyArkaNaC3I4JDT-5iyxmwuqMAUI5eIOA80",
-  authDomain: "next-node-boilerplate.firebaseapp.com",
-  projectId: "next-node-boilerplate",
-  storageBucket: "next-node-boilerplate.firebasestorage.app",
-  messagingSenderId: "328849041984",
-  appId: "1:328849041984:web:614eadff8ae093fed18da5",
+  apiKey: "AIzaSyDpMRBspNM_Q_n5FdPflOmk1P2Gy56CkWs",
+  authDomain: "dulangi-enterprises.firebaseapp.com",
+  projectId: "dulangi-enterprises",
+  storageBucket: "dulangi-enterprises.firebasestorage.app",
+  messagingSenderId: "772238010843",
+  appId: "1:772238010843:web:ff84226addcac730a5dffe"
 };
 
 // Initialize Firebase
