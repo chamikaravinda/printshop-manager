@@ -1,8 +1,8 @@
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import {
-  DEFAULT_PROFILE_IMAGE,
-  USER_COLLECTION,
-} from "../utils/commonConstant.js";
+import { Timestamp } from "firebase-admin/firestore";
+import { firestore } from "../config/firebase.config.js";
+import { USER_COLLECTION, USER_ROLE_USER } from "../utils/commonConstant.js";
+
+const userCollection = firestore.collection(USER_COLLECTION);
 
 class User {
   constructor(name, email, password, profilePicture, userRole, id, createdAt) {
@@ -11,7 +11,7 @@ class User {
     this.email = email;
     this.password = password;
     this.profilePicture = profilePicture;
-    this.userRole = userRole || "user";
+    this.userRole = userRole || USER_ROLE_USER;
     this.createdAt = createdAt || Timestamp.now();
   }
 
@@ -20,8 +20,6 @@ class User {
    * @returns void
    */
   async save() {
-    const db = getFirestore();
-
     const userData = {
       name: this.name,
       email: this.email,
@@ -31,8 +29,7 @@ class User {
       createdAt: this.createdAt,
     };
 
-    const docRef = db.collection(USER_COLLECTION).doc();
-    await docRef.set(userData);
+    await userCollection.add(userData);
   }
 
   /**
@@ -41,12 +38,7 @@ class User {
    * @returns {User} - User object or null if not found
    */
   static async findByEmail(email) {
-    const db = getFirestore();
-
-    const userDoc = await db
-      .collection(USER_COLLECTION)
-      .where("email", "==", email)
-      .get();
+    const userDoc = await userCollection.where("email", "==", email).get();
 
     let user;
 
@@ -70,12 +62,10 @@ class User {
    * Get all users from the `users` collection.
    * @returns {User[]} - Array of User objects
    */
-  static async findAll(sortDirection,startIndex,limit) {
-    const db = getFirestore();
-    const snapshot = await db
-      .collection(USER_COLLECTION)
-      .orderBy("createdAt", sortDirection) 
-      .offset(startIndex) 
+  static async findAll(sortDirection, startIndex, limit) {
+    const snapshot = await userCollection
+      .orderBy("createdAt", sortDirection)
+      .offset(startIndex)
       .limit(limit)
       .get();
 
@@ -94,9 +84,7 @@ class User {
   }
 
   static async updateById(id, userData) {
-    const db = getFirestore();
-
-    const userDoc = await db.collection(USER_COLLECTION).doc(id);
+    const userDoc = await userCollection.doc(id);
 
     if (userDoc.empty) {
       console.error("User not found in the database.", userData.email);
@@ -105,6 +93,10 @@ class User {
 
     const res = await userDoc.update(this.createUpdateUserObject(userData));
     return res;
+  }
+
+  static async findByIdAndDelete(id) {
+    return await userCollection.doc(id).delete();
   }
 
   static createUpdateUserObject(user) {
@@ -117,10 +109,6 @@ class User {
       }
     });
     return updateUserObject;
-  }
-
-  static async findByIdAndDelete(id) {
-    return await db.collection(USER_COLLECTION).doc(id).delete();
   }
 }
 

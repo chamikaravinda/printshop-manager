@@ -1,26 +1,24 @@
 import express from "express";
 import userRoutes from "./routes/user.routes.js";
 import authRoutes from "./routes/auth.route.js";
+import deliveryNoteRoutes from "./routes/delivery-note.routes.js";
 import cookieParser from "cookie-parser";
 import config from "./config/config.js";
 import { initializeApp, cert } from "firebase-admin/app";
-import serviceAccount from "../dulangi-enterprises-firebase-adminsdk-fbsvc-fa12c6bf41.json" assert { type: "json" };
 
 const app = express();
 
-initializeApp({
-  credential: cert(serviceAccount),
-});
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.listen(config.port, () => {
   console.log(`Server is running @ ${config.hostUrl}`);
-});
+}); 
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/delivery-note", deliveryNoteRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
