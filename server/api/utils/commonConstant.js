@@ -5,7 +5,7 @@ export const ACCESS_TOKEN = "access_token";
 
 //Collections
 export const USER_COLLECTION = "users";
-
+export const DELIVERY_NOTE_COLLECTION = 'deliveryNotes';
 
 //Common constants 
 export const USER_ROLE_ADMIN = "ADMIN";

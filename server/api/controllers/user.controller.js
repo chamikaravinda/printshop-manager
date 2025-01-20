@@ -43,7 +43,10 @@ export const updateUserById = async (req, res, next) => {
 export const deleteUser = async (req, res, next) => {
   console.log("Request received to delete user", req.params.userId);
 
-  if (!(req.user.userRole === USER_ROLE_ADMIN) && req.user.id !== req.params.userId) {
+  if (
+    !(req.user.userRole === USER_ROLE_ADMIN) &&
+    req.user.id !== req.params.userId
+  ) {
     console.error("Not authorized to delete the user", req.params.userId);
     return next(errorHandler(403, "Your are not allowed to delete this user"));
   }
@@ -60,7 +63,7 @@ export const deleteUser = async (req, res, next) => {
 };
 
 export const signout = (req, res, next) => {
-  console.log("Request received to signout user", req.user.id);
+  console.log("Request received to signout user");
   try {
     res
       .clearCookie(ACCESS_TOKEN)
