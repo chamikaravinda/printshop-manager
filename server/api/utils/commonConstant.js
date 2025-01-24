@@ -8,7 +8,7 @@ export const ACCESS_TOKEN = "access_token";
 export const USER_COLLECTION = "users";
 export const DELIVERY_NOTE_COLLECTION = "deliveryNotes";
 export const INVOICE_COLLECTION = "invoices";
-
+export const PURCHASE_ORDER_COLLECTION = "purchaseOrders"
 //Common constants
 export const USER_ROLE_ADMIN = "ADMIN";
 export const USER_ROLE_USER = "USER";
