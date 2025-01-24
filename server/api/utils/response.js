@@ -8,6 +8,7 @@ export const errorHandler = (statusCode, message,data) => {
 };
 
 export const successHandler = (statusCode, message, data) => {
+  console.log(message);
   const success = {
     statusCode: statusCode,
     message: message,
