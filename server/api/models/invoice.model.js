@@ -4,16 +4,17 @@ import { INVOICE_COLLECTION } from "../utils/commonConstant.js";
 const invoicesCollection = firestore.collection(INVOICE_COLLECTION);
 
 class Invoice {
-  constructor(purchaseOrderNumber, date, receiver, items, totalAmount) {
+  constructor(purchaseOrderNumber, date, receiver, items, totalAmount, deliveryNotes) {
     if (
       !purchaseOrderNumber ||
       !date ||
       !receiver ||
       !Array.isArray(items) ||
       items.length === 0 ||
-      !totalAmount
+      totalAmount === undefined ||
+      !Array.isArray(deliveryNotes)
     ) {
-      throw new Error("Missing required fields or invalid items format.");
+      throw new Error("Missing required fields or invalid format.");
     }
 
     if (
@@ -35,6 +36,7 @@ class Invoice {
     this.receiver = receiver;
     this.items = items;
     this.totalAmount = totalAmount;
+    this.deliveryNotes = deliveryNotes;
     this.createdAt = new Date().toISOString();
   }
 
@@ -44,7 +46,8 @@ class Invoice {
       data.date,
       data.receiver,
       data.items,
-      data.totalAmount
+      data.totalAmount,
+      data.deliveryNotes
     );
     const docRef = await invoicesCollection.add({
       purchaseOrderNumber: newInvoice.purchaseOrderNumber,
@@ -52,6 +55,7 @@ class Invoice {
       receiver: newInvoice.receiver,
       items: newInvoice.items,
       totalAmount: newInvoice.totalAmount,
+      deliveryNotes: newInvoice.deliveryNotes,
       createdAt: newInvoice.createdAt,
     });
     return { id: docRef.id, ...newInvoice };
@@ -102,7 +106,8 @@ class Invoice {
       data.date,
       data.receiver,
       data.items,
-      data.totalAmount
+      data.totalAmount,
+      data.deliveryNotes
     );
     await invoicesCollection.doc(id).update({
       purchaseOrderNumber: updatedInvoice.purchaseOrderNumber,
@@ -110,6 +115,7 @@ class Invoice {
       receiver: updatedInvoice.receiver,
       items: updatedInvoice.items,
       totalAmount: updatedInvoice.totalAmount,
+      deliveryNotes: updatedInvoice.deliveryNotes,
       updatedAt: new Date().toISOString(),
     });
     return { id, ...updatedInvoice };
