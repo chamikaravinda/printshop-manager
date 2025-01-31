@@ -3,13 +3,17 @@ import { errorHandler, successHandler } from "../utils/response.js";
 
 export const createPurchaseOrder = async (req, res, next) => {
   console.log("Request received to create purchase order", req.body);
-
+  //TODO: Check PO number already exists
   try {
     const purchaseOrder = await PurchaseOrder.create(req.body);
     res
       .status(201)
       .json(
-        successHandler(201, "Purchase order created successfully", purchaseOrder)
+        successHandler(
+          201,
+          "Purchase order created successfully",
+          purchaseOrder
+        )
       );
   } catch (error) {
     console.error("Failed to create purchase order.", error);
@@ -36,14 +40,14 @@ export const getAllPurchaseOrders = async (req, res, next) => {
       limit,
       order
     );
+    const recordCount = await PurchaseOrder.getCount(filters);
     res
       .status(200)
       .json(
-        successHandler(
-          200,
-          "Purchase orders retrieved successfully",
-          purchaseOrders
-        )
+        successHandler(200, "Purchase orders retrieved successfully", {
+          purchaseOrders,
+          recordCount,
+        })
       );
   } catch (error) {
     console.error("Failed to retrieve purchase orders.", error);
@@ -60,7 +64,11 @@ export const getPurchaseOrderById = async (req, res, next) => {
     res
       .status(200)
       .json(
-        successHandler(200, "Purchase order retrieved successfully", purchaseOrder)
+        successHandler(
+          200,
+          "Purchase order retrieved successfully",
+          purchaseOrder
+        )
       );
   } catch (error) {
     console.error("Failed to get purchase order.", error);
@@ -77,7 +85,11 @@ export const updatePurchaseOrder = async (req, res, next) => {
     res
       .status(200)
       .json(
-        successHandler(200, "Purchase order updated successfully", purchaseOrder)
+        successHandler(
+          200,
+          "Purchase order updated successfully",
+          purchaseOrder
+        )
       );
   } catch (error) {
     console.error("Failed to update purchase order.", error);

@@ -15,6 +15,7 @@ import Users from "./pages/Users";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import PurchaseOrder from "./pages/PurchaseOrder";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route element={<AdminDashboardPrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/purchase-orders" element={<PurchaseOrder />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

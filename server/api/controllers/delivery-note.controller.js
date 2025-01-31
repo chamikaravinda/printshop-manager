@@ -42,7 +42,7 @@ export const getAllDeliveryNotes = async (req, res, next) => {
       .json(
         successHandler(
           200,
-          "Delivery notes retrived successfully",
+          "Delivery notes retrieved successfully",
           deliveryNotes
         )
       );

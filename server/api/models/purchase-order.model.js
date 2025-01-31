@@ -4,11 +4,11 @@ import { PURCHASE_ORDER_COLLECTION } from "../utils/commonConstant.js";
 const purchaseOrdersCollection = firestore.collection(PURCHASE_ORDER_COLLECTION);
 
 class PurchaseOrder {
-  constructor(purchaseOrderNumber, date, receiver, items, totalAmount) {
+  constructor(purchaseOrderNumber, date, orderedBy, items, totalAmount) {
     if (
       !purchaseOrderNumber ||
       !date ||
-      !receiver ||
+      !orderedBy ||
       !Array.isArray(items) ||
       items.length === 0 ||
       totalAmount === undefined
@@ -32,7 +32,7 @@ class PurchaseOrder {
 
     this.purchaseOrderNumber = purchaseOrderNumber;
     this.date = date;
-    this.receiver = receiver;
+    this.orderedBy = orderedBy;
     this.items = items;
     this.totalAmount = totalAmount;
     this.createdAt = new Date().toISOString();
@@ -42,14 +42,14 @@ class PurchaseOrder {
     const newPurchaseOrder = new PurchaseOrder(
       data.purchaseOrderNumber,
       data.date,
-      data.receiver,
+      data.orderedBy,
       data.items,
       data.totalAmount
     );
     const docRef = await purchaseOrdersCollection.add({
       purchaseOrderNumber: newPurchaseOrder.purchaseOrderNumber,
       date: newPurchaseOrder.date,
-      receiver: newPurchaseOrder.receiver,
+      orderedBy: newPurchaseOrder.orderedBy,
       items: newPurchaseOrder.items,
       totalAmount: newPurchaseOrder.totalAmount,
       createdAt: newPurchaseOrder.createdAt,
@@ -72,8 +72,8 @@ class PurchaseOrder {
       );
     }
 
-    if (filters.receiver) {
-      query = query.where("receiver", "==", filters.receiver);
+    if (filters.orderedBy) {
+      query = query.where("orderedBy", "==", filters.orderedBy);
     }
 
     const snapshot = await query
@@ -82,6 +82,31 @@ class PurchaseOrder {
       .limit(limit)
       .get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  }
+
+  static async getCount(filters = {}) {
+    let query = purchaseOrdersCollection;
+
+    if (filters.date) {
+      query = query.where("date", "==", filters.date);
+    }
+
+    if (filters.purchaseOrderNumber) {
+      query = query.where(
+        "purchaseOrderNumber",
+        "==",
+        filters.purchaseOrderNumber
+      );
+    }
+
+    if (filters.orderedBy) {
+      query = query.where("orderedBy", "==", filters.orderedBy);
+    }
+
+    const snapshot = await query
+      .count()
+      .get();
+    return snapshot.data().count;
   }
 
   static async getById(id) {
@@ -100,14 +125,14 @@ class PurchaseOrder {
     const updatedPurchaseOrder = new PurchaseOrder(
       data.purchaseOrderNumber,
       data.date,
-      data.receiver,
+      data.orderedBy,
       data.items,
       data.totalAmount
     );
     await purchaseOrdersCollection.doc(id).update({
       purchaseOrderNumber: updatedPurchaseOrder.purchaseOrderNumber,
       date: updatedPurchaseOrder.date,
-      receiver: updatedPurchaseOrder.receiver,
+      orderedBy: updatedPurchaseOrder.orderedBy,
       items: updatedPurchaseOrder.items,
       totalAmount: updatedPurchaseOrder.totalAmount,
       updatedAt: new Date().toISOString(),
