@@ -1,25 +1,36 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 import { TextInput, Button, Label, Table, Datepicker } from "flowbite-react";
 import { format } from "date-fns";
 
-const AddPurchaseOrder = ({ onSubmit }) => {
+const AddPurchaseOrder = () => {
   const [formData, setFormData] = useState({
     purchaseOrderNumber: "",
     date: "",
     receiver: "",
     items: [],
-    currentItem: { description: "", quantity: "", unitPrice: "", totalPrice: "" },
+    currentItem: {
+      description: "",
+      quantity: "",
+      unitPrice: "",
+      totalPrice: "",
+    },
     editingIndex: null,
   });
+
+  const [validationErrors, setValidationErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setValidationErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleDateChange = (date) => {
-    setFormData((prevData) => ({ ...prevData, date: format(date, "dd/MM/yyyy") }));
+    setFormData((prevData) => ({
+      ...prevData,
+      date: format(date, "dd/MM/yyyy"),
+    }));
+    setValidationErrors((prevErrors) => ({ ...prevErrors, date: "" }));
   };
 
   const handleItemChange = (e) => {
@@ -29,13 +40,18 @@ const AddPurchaseOrder = ({ onSubmit }) => {
       currentItem: {
         ...prevData.currentItem,
         [name]: value,
-        totalPrice: (prevData.currentItem.quantity * prevData.currentItem.unitPrice) || 0,
+        totalPrice:
+          prevData.currentItem.quantity * prevData.currentItem.unitPrice || 0,
       },
     }));
   };
 
   const handleAddOrUpdateItem = () => {
-    if (formData.currentItem.description && formData.currentItem.quantity && formData.currentItem.unitPrice) {
+    if (
+      formData.currentItem.description &&
+      formData.currentItem.quantity &&
+      formData.currentItem.unitPrice
+    ) {
       setFormData((prevData) => {
         const updatedItems = [...prevData.items];
         if (prevData.editingIndex !== null) {
@@ -46,7 +62,12 @@ const AddPurchaseOrder = ({ onSubmit }) => {
         return {
           ...prevData,
           items: updatedItems,
-          currentItem: { description: "", quantity: "", unitPrice: "", totalPrice: "" },
+          currentItem: {
+            description: "",
+            quantity: "",
+            unitPrice: "",
+            totalPrice: "",
+          },
           editingIndex: null,
         };
       });
@@ -57,7 +78,8 @@ const AddPurchaseOrder = ({ onSubmit }) => {
     setFormData((prevData) => ({
       ...prevData,
       items: prevData.items.filter((_, i) => i !== index),
-      editingIndex: prevData.editingIndex === index ? null : prevData.editingIndex,
+      editingIndex:
+        prevData.editingIndex === index ? null : prevData.editingIndex,
     }));
   };
 
@@ -71,15 +93,48 @@ const AddPurchaseOrder = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({ purchaseOrderNumber: "", date: "", receiver: "", items: [], currentItem: { description: "", quantity: "", unitPrice: "", totalPrice: "" }, editingIndex: null });
+
+    let errors = {};
+    if (!formData.purchaseOrderNumber) errors.purchaseOrderNumber = "Required";
+    if (!formData.date) errors.date = "Required";
+    if (!formData.receiver) errors.receiver = "Required";
+    if (formData.items.length === 0)
+      errors.items = "At least one item must be added";
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    console.log("Purchase Order Submitted:", formData);
+
+    setFormData({
+      purchaseOrderNumber: "",
+      date: "",
+      receiver: "",
+      items: [],
+      currentItem: {
+        description: "",
+        quantity: "",
+        unitPrice: "",
+        totalPrice: "",
+      },
+      editingIndex: null,
+    });
+
+    setValidationErrors({});
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md w-full h-full flex flex-col">
-      <div className="flex-grow flex">
-        <div className="w-1/2 pr-4">
-          <h2 className="text-lg font-semibold mb-4">Add Purchase Order</h2>
+    <div className="p-8 m-8 bg-white rounded-lg shadow-md w-full h-full flex flex-col">
+      <h2 className="text-lg font-semibold mb-6 text-center">
+        Add Purchase Order
+      </h2>
+
+      {/* Left (Purchase Order Fields) and Right (Add Items Fields) */}
+      <div className="flex space-x-8">
+        {/* Left Section */}
+        <div className="w-1/2">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="purchaseOrderNumber">Purchase Order Number</Label>
@@ -89,17 +144,27 @@ const AddPurchaseOrder = ({ onSubmit }) => {
                 placeholder="Enter Purchase Order Number"
                 value={formData.purchaseOrderNumber}
                 onChange={handleChange}
-                required
+                className={
+                  validationErrors.purchaseOrderNumber ? "border-red-500" : ""
+                }
               />
+              {validationErrors.purchaseOrderNumber && (
+                <p className="text-red-500 text-sm">
+                  {validationErrors.purchaseOrderNumber}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="date">Date</Label>
               <Datepicker
                 value={formData.date}
                 onSelectedDateChanged={handleDateChange}
-                required
                 format="dd/MM/yyyy"
+                className={validationErrors.date ? "border-red-500" : ""}
               />
+              {validationErrors.date && (
+                <p className="text-red-500 text-sm">{validationErrors.date}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="receiver">Receiver</Label>
@@ -109,48 +174,65 @@ const AddPurchaseOrder = ({ onSubmit }) => {
                 placeholder="Enter Receiver Name"
                 value={formData.receiver}
                 onChange={handleChange}
-                required
+                className={validationErrors.receiver ? "border-red-500" : ""}
               />
-            </div>
-            <div>
-              <Label>Add Item</Label>
-              <div className="space-y-2">
-                <TextInput
-                  name="description"
-                  placeholder="Enter Item Description"
-                  value={formData.currentItem.description}
-                  onChange={handleItemChange}
-                />
-                <TextInput
-                  name="quantity"
-                  type="number"
-                  placeholder="Enter Quantity"
-                  value={formData.currentItem.quantity}
-                  onChange={handleItemChange}
-                />
-                <TextInput
-                  name="unitPrice"
-                  type="number"
-                  placeholder="Enter Unit Price"
-                  value={formData.currentItem.unitPrice}
-                  onChange={handleItemChange}
-                />
-                <TextInput
-                  name="totalPrice"
-                  type="number"
-                  placeholder="Total Price"
-                  value={formData.currentItem.quantity * formData.currentItem.unitPrice || 0}
-                  readOnly
-                />
-                <Button onClick={handleAddOrUpdateItem} className="ml-2">
-                  {formData.editingIndex !== null ? "Update" : "Add"}
-                </Button>
-              </div>
+              {validationErrors.receiver && (
+                <p className="text-red-500 text-sm">
+                  {validationErrors.receiver}
+                </p>
+              )}
             </div>
           </form>
         </div>
-        <div className="w-1/2 pl-4 border-l overflow-auto">
-          <h3 className="text-lg font-semibold mb-4">Added Items</h3>
+
+        {/* Right Section - Add Items */}
+        <div className="w-1/2">
+          <Label>Add Item</Label>
+          <div className="space-y-2">
+            <TextInput
+              name="description"
+              placeholder="Enter Item Description"
+              value={formData.currentItem.description}
+              onChange={handleItemChange}
+            />
+            <TextInput
+              name="quantity"
+              type="number"
+              placeholder="Enter Quantity"
+              value={formData.currentItem.quantity}
+              onChange={handleItemChange}
+            />
+            <TextInput
+              name="unitPrice"
+              type="number"
+              placeholder="Enter Unit Price"
+              value={formData.currentItem.unitPrice}
+              onChange={handleItemChange}
+            />
+            <TextInput
+              name="totalPrice"
+              type="number"
+              placeholder="Total Price"
+              value={
+                formData.currentItem.quantity *
+                  formData.currentItem.unitPrice || 0
+              }
+              readOnly
+            />
+            <Button onClick={handleAddOrUpdateItem} className="ml-2">
+              {formData.editingIndex !== null ? "Update" : "Add"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Table for Added Items (Scrollable with Minimum Height) */}
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold mb-4">Added Items</h3>
+        {validationErrors.items && (
+          <p className="text-red-500 text-sm">{validationErrors.items}</p>
+        )}
+        <div className="min-h-40 max-h-60 overflow-y-auto border rounded-lg shadow-md">
           <Table className="w-full">
             <Table.Head>
               <Table.HeadCell>Description</Table.HeadCell>
@@ -161,13 +243,25 @@ const AddPurchaseOrder = ({ onSubmit }) => {
             </Table.Head>
             <Table.Body>
               {formData.items.map((item, index) => (
-                <Table.Row key={index} onClick={() => handleEditItem(index)} className="cursor-pointer">
+                <Table.Row
+                  key={index}
+                  onClick={() => handleEditItem(index)}
+                  className="cursor-pointer"
+                >
                   <Table.Cell>{item.description}</Table.Cell>
                   <Table.Cell>{item.quantity}</Table.Cell>
                   <Table.Cell>{item.unitPrice}</Table.Cell>
                   <Table.Cell>{item.totalPrice}</Table.Cell>
                   <Table.Cell>
-                    <Button color="failure" onClick={(e) => { e.stopPropagation(); handleRemoveItem(index); }}>Remove</Button>
+                    <Button
+                      color="failure"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveItem(index);
+                      }}
+                    >
+                      Remove
+                    </Button>
                   </Table.Cell>
                 </Table.Row>
               ))}
@@ -175,15 +269,19 @@ const AddPurchaseOrder = ({ onSubmit }) => {
           </Table>
         </div>
       </div>
-      <div className="mt-4 flex justify-end">
-        <Button type="submit" className="bg-blue-500 text-white">Submit</Button>
+
+      {/* Submit Button (Centered) */}
+      <div className="mt-6 mx-auto flex justify-center">
+        <Button
+          type="submit"
+          onClick={handleSubmit}
+          className="bg-blue-500 text-white px-6"
+        >
+          Submit
+        </Button>
       </div>
     </div>
   );
-};
-
-AddPurchaseOrder.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddPurchaseOrder;
