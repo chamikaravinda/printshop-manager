@@ -8,14 +8,14 @@ import {
   AuthRoute,
   AdminDashboardPrivateRoute,
 } from "./components/PrivateRoute";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
-import Users from "./pages/Users";
-import Profile from "./pages/Profile";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
-import PurchaseOrder from "./pages/PurchaseOrder";
+import SignIn from "./pages/PublicPages/SignIn";
+import SignUp from "./pages/PublicPages/SignUp";
+import Home from "./pages/PublicPages/Home";
+import Users from "./pages/User/Users";
+import Profile from "./pages/User/Profile";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import NotFound from "./pages/PublicPages/NotFound";
+import PurchaseOrders from "./pages/PurchaseOrder/PurchaseOrders";
 
 function App() {
   return (
@@ -38,7 +38,7 @@ function App() {
         <Route element={<AdminDashboardPrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
-          <Route path="/purchase-orders" element={<PurchaseOrder />} />
+          <Route path="/purchase-orders" element={<PurchaseOrders />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -30,7 +30,7 @@ export default function DashboardSidebar() {
             <>
               <Sidebar.Collapse icon={HiDocumentText} label="Purchase Orders">
                 <Sidebar.Item href="/purchase-orders">All Orders</Sidebar.Item>
-                <Sidebar.Item href="/create-purchase-order">
+                <Sidebar.Item href="/purchase-order/add">
                   Create Order
                 </Sidebar.Item>
               </Sidebar.Collapse>
