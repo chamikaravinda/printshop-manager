@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import PurchaseOrder from "./pages/PurchaseOrder";
+import AddPurchaseOrder from "./pages/AddPurchaseOrder";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
           <Route path="/purchase-orders" element={<PurchaseOrder />} />
+          <Route path="/purchase-order/add" element={<AddPurchaseOrder />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
