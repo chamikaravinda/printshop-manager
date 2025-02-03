@@ -1,14 +1,14 @@
 import { Button, Label, TextInput } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import OAuth from "../components/OAuth";
+import OAuth from "../../components/OAuth.jsx";
 import {
   dispatchError,
   dispatchStopLoading,
   dispatchSuccess,
-} from "../actions/notifications.action";
-import { userSingUp } from "../actions/auth.action.js";
-import { primary_gradient } from "../utils/commonConstants.js";
+} from "../../actions/notifications.action.js";
+import { userSingUp } from "../../actions/auth.action.js";
+import { primary_gradient } from "../../utils/commonConstants.js";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -35,7 +35,7 @@ export default function SignUp() {
     }
 
     const signUpSuccess = () => {
-      setTimeout(()=> navigate("/sign-in"), 4000);
+      setTimeout(() => navigate("/sign-in"), 4000);
       return dispatchSuccess("Sign up success. Redirecting to sign in page");
     };
 
@@ -48,7 +48,10 @@ export default function SignUp() {
         {/* left */}
         <div className="flex-1 mx-auto items-center">
           <Link to="/">
-          <img src = "./logo-portrait.png" className="md:h-72 md:w-72 h-52 w-52"/>
+            <img
+              src="./logo-portrait.png"
+              className="md:h-72 md:w-72 h-52 w-52"
+            />
           </Link>
         </div>
         {/* right */}

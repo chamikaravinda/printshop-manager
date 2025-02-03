@@ -3,15 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { dispatchError } from "../actions/notifications.action.js";
+import { dispatchError } from "../../actions/notifications.action.js";
 import {
   uploadProfilePicture,
   updateProfile,
   deleteUser,
   signOut,
-} from "../actions/user.action.js";
-import TwoOptionModel from "../components/TwoOptionModel.jsx";
-import { primary_gradient } from "../utils/commonConstants.js";
+} from "../../actions/user.action.js";
+import TwoOptionModel from "../../components/TwoOptionModel.jsx";
+import { primary_gradient } from "../../utils/commonConstants.js";
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -128,7 +128,11 @@ export default function Profile() {
             src={imageFileUrl || currentUser.profilePicture}
             alt="user"
             className={`rounded-full w-full h-full object-cover border-8 boder-[lightgray]
-            ${imageFileUploadProgress && imageFileUploadProgress < 100 && "opacity-60"} `}
+            ${
+              imageFileUploadProgress &&
+              imageFileUploadProgress < 100 &&
+              "opacity-60"
+            } `}
           />
         </div>
         <TextInput

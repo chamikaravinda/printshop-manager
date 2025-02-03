@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Table } from "flowbite-react";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { getUsers, deleteAnyUser } from "../actions/user.action";
-import TwoOptionModel from "../components/TwoOptionModel";
-import {USER_ROLE_ADMIN} from "../utils/commonConstants"
+import { getUsers, deleteAnyUser } from "../../actions/user.action";
+import TwoOptionModel from "../../components/TwoOptionModel";
+import { USER_ROLE_ADMIN } from "../../utils/commonConstants";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -15,7 +15,7 @@ export default function Users() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const success = ({users}) => {
+    const success = ({ users }) => {
       setUsers(users);
       if (users.length < 9) {
         setShowMore(false);
@@ -28,7 +28,7 @@ export default function Users() {
 
   const handleShowMore = async () => {
     const startIndex = users.length;
-    const success = ({users}) => {
+    const success = ({ users }) => {
       setUsers((prev) => [...prev, ...users]);
       if (users.length < 9) {
         setShowMore(false);
@@ -57,16 +57,12 @@ export default function Users() {
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
-              <Table.HeadCell className="bg-gray-200">
-                Date created
-              </Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">
-                User image
-              </Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Username</Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Email</Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Admin</Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Delete</Table.HeadCell>
+              <Table.HeadCell>Date created</Table.HeadCell>
+              <Table.HeadCell>User image</Table.HeadCell>
+              <Table.HeadCell>Name</Table.HeadCell>
+              <Table.HeadCell>Email</Table.HeadCell>
+              <Table.HeadCell>Admin</Table.HeadCell>
+              <Table.HeadCell>Delete</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {users.map((user) => (
@@ -75,7 +71,10 @@ export default function Users() {
                   key={user.id}
                 >
                   <Table.Cell>
-                    {new Date((user.createdAt._seconds * 1000) + (user.createdAt._nanoseconds / 1e6)).toLocaleDateString()}
+                    {new Date(
+                      user.createdAt._seconds * 1000 +
+                        user.createdAt._nanoseconds / 1e6
+                    ).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell>
                     <img
@@ -84,7 +83,7 @@ export default function Users() {
                       className="w-10 h-10 object-cover bg-gray-500 rounder-full"
                     />
                   </Table.Cell>
-                  <Table.Cell>{user.username}</Table.Cell>
+                  <Table.Cell>{user.name}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>
                     {user.userRole === USER_ROLE_ADMIN ? (
