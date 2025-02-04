@@ -1,10 +1,17 @@
 import PropTypes from "prop-types";
-import { Modal, Table } from "flowbite-react";
+import { Button, Modal, Table } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { formatCurrencyToLRK } from "../../utils/commonFuntion";
+import { primary_button_gradient, secondary_button_gradient } from "../../utils/commonConstants";
+import { useNavigate } from "react-router-dom";
 
 const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
   const { theme } = useSelector((state) => state.theme);
+  const navigate = useNavigate();
+
+  const updatePurchaseOrder = () => {
+    navigate(`/purchase-order/update/${purchaseOrder.id}`);
+  };
 
   return (
     <Modal show={!!purchaseOrder} onClose={onClose} size="xl" className={theme}>
@@ -49,8 +56,12 @@ const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
                   <Table.Row key={index}>
                     <Table.Cell>{item.description}</Table.Cell>
                     <Table.Cell>{item.quantity}</Table.Cell>
-                    <Table.Cell>{formatCurrencyToLRK(item.unitPrice)}</Table.Cell>
-                    <Table.Cell>{formatCurrencyToLRK(item.totalPrice)}</Table.Cell>
+                    <Table.Cell>
+                      {formatCurrencyToLRK(item.unitPrice)}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {formatCurrencyToLRK(item.totalPrice)}
+                    </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
@@ -62,12 +73,22 @@ const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
           </p>
         </div>
       </Modal.Body>
+      <Modal.Footer className="bg-gray-100 dark:bg-gray-800">
+        <Button
+          onClick={updatePurchaseOrder}
+          className={`${primary_button_gradient} min-w-28 hover:ring-2 hover:ring-pink-900`}
+        >
+          Update
+        </Button>
+        <Button  className={`${secondary_button_gradient} min-w-28 hover:ring-2 hover:ring-pink-900`} onClick={onClose}>Close</Button>
+      </Modal.Footer>
     </Modal>
   );
 };
 
 ViewPurchaseOrder.propTypes = {
   purchaseOrder: PropTypes.shape({
+    id: PropTypes.string,
     purchaseOrderNumber: PropTypes.string,
     date: PropTypes.string,
     orderedBy: PropTypes.string,

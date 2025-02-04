@@ -31,6 +31,23 @@ export const getPurchaseOrders = async (
     });
 };
 
+export const getPurchaseOrder = async (orderId, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/purchase-order/get/${orderId}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchStopLoading();
+      success(payload.data);
+    })
+    .catch((error) => {
+      dispatchError(error.message);
+    });
+};
+
 export const addPurchaseOrders = async (newPurchaseOrder, success) => {
   dispatchStartLoading();
   await fetch("/api/purchase-order", {
@@ -39,6 +56,33 @@ export const addPurchaseOrders = async (newPurchaseOrder, success) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(newPurchaseOrder),
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success();
+      dispatchSuccess(payload.message);
+    })
+    .catch((error) => {
+      dispatchError(error.message);
+    });
+};
+
+export const updatePurchaseOrders = async (
+  updatedPurchaseOrder,
+  orderId,
+  success
+) => {
+  dispatchStartLoading();
+  await fetch(`/api/purchase-order/${orderId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedPurchaseOrder),
   })
     .then((res) => res.json())
     .then((payload) => {

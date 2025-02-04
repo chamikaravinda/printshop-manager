@@ -17,6 +17,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import NotFound from "./pages/PublicPages/NotFound";
 import PurchaseOrders from "./pages/PurchaseOrder/PurchaseOrders";
 import AddPurchaseOrder from "./pages/PurchaseOrder/AddPurchaseOrder";
+import UpdatePurchaseOrder from "./pages/PurchaseOrder/UpdatePurchaseOrder";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/purchase-order/add" element={<AddPurchaseOrder />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/purchase-order/update/:id" element={<UpdatePurchaseOrder />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
