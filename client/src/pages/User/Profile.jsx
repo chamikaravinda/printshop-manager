@@ -10,8 +10,8 @@ import {
   deleteUser,
   signOut,
 } from "../../actions/user.action.js";
-import TwoOptionModel from "../../components/TwoOptionModel.jsx";
 import { primary_gradient } from "../../utils/commonConstants.js";
+import ConfirmationPopUp from "../../components/ConfirmationPopUp.jsx";
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -172,18 +172,11 @@ export default function Profile() {
           Sign out
         </span>
       </div>
-      <TwoOptionModel
-        showModel={showModel}
-        onClose={() => {
-          setShowModel(false);
-        }}
-        ModelMessage="Are you sure you want to delete your account ?"
-        AcceptBtnText="Yes,I'm sure"
-        CancelBtnText="No,Cancel"
-        AcceptAction={handleDeleteUser}
-        CancelAction={() => {
-          setShowModel(false);
-        }}
+      <ConfirmationPopUp
+        message="Are you sure you want to delete your account ?"
+        openModal={showModel}
+        falseAction={() => setShowModel(false)}
+        trueAction={() => handleDeleteUser()}
       />
     </div>
   );

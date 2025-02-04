@@ -31,16 +31,34 @@ export const getPurchaseOrders = async (
     });
 };
 
-
-export const deletePurchaseOrders = async (
-  orderId, success
-) => {
+export const addPurchaseOrders = async (newPurchaseOrder, success) => {
   dispatchStartLoading();
-  await fetch(
-    `/api/purchase-order/${orderId}`, {
-      method: "DELETE",
-    }
-  )
+  await fetch("/api/purchase-order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newPurchaseOrder),
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success();
+      dispatchSuccess(payload.message);
+    })
+    .catch((error) => {
+      dispatchError(error.message);
+    });
+};
+
+export const deletePurchaseOrders = async (orderId, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/purchase-order/${orderId}`, {
+    method: "DELETE",
+  })
     .then((res) => res.json())
     .then((payload) => {
       if (!payload.success) {

@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import ConfirmationPopUp from "../../components/ConfirmationPopUp";
 import ViewPurchaseOrder from "./ViewPurchaseOrder";
+import { formatCurrencyToLRK } from "../../utils/commonFuntion";
 
 const PurchaseOrders = () => {
   const navigate = useNavigate();
@@ -163,10 +164,7 @@ const PurchaseOrders = () => {
                   <Table.Cell>{order.date}</Table.Cell>
                   <Table.Cell>{order.orderedBy}</Table.Cell>
                   <Table.Cell>
-                    {order.totalAmount.toLocaleString("en-LK", {
-                      style: "currency",
-                      currency: "LKR",
-                    })}
+                    {formatCurrencyToLRK(order.orderTotal)}
                   </Table.Cell>
                   <Table.Cell>
                     <button
@@ -194,7 +192,10 @@ const PurchaseOrders = () => {
       <div className="mt-4 text-sm">
         <span>
           Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-          {currentPage * itemsPerPage} of {totalRecords} Entries
+          {purchaseOrders.length < itemsPerPage
+            ? (currentPage-1) *itemsPerPage + purchaseOrders.length
+            : currentPage * itemsPerPage}{" "}
+          of {totalRecords} Entries
         </span>
       </div>
 

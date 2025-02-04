@@ -16,6 +16,7 @@ import Profile from "./pages/User/Profile";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import NotFound from "./pages/PublicPages/NotFound";
 import PurchaseOrders from "./pages/PurchaseOrder/PurchaseOrders";
+import AddPurchaseOrder from "./pages/PurchaseOrder/AddPurchaseOrder";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route element={<AdminDashboardPrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/purchase-order/add" element={<AddPurchaseOrder />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
         </Route>
         <Route path="*" element={<NotFound />} />
