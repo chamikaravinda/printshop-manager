@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { TextInput, Button, Label, Table, Datepicker } from "flowbite-react";
 import { format } from "date-fns";
+import { primary_button_gradient } from "../../utils/commonConstants";
+import { formatCurrencyToLRK } from "../../utils/commonFuntion";
+import { useNavigate } from "react-router-dom";
+import { addPurchaseOrders } from "../../actions/purchase-order.action";
 
 const AddPurchaseOrder = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     purchaseOrderNumber: "",
     date: "",
-    receiver: "",
+    orderedBy: "",
     items: [],
+    orderTotal: 0,
     currentItem: {
       description: "",
       quantity: "",
@@ -35,13 +41,12 @@ const AddPurchaseOrder = () => {
 
   const handleItemChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       currentItem: {
         ...prevData.currentItem,
         [name]: value,
-        totalPrice:
-          prevData.currentItem.quantity * prevData.currentItem.unitPrice || 0,
       },
     }));
   };
@@ -54,13 +59,23 @@ const AddPurchaseOrder = () => {
     ) {
       setFormData((prevData) => {
         const updatedItems = [...prevData.items];
+
+        prevData.currentItem.totalPrice =
+          prevData.currentItem.quantity * prevData.currentItem.unitPrice;
+
         if (prevData.editingIndex !== null) {
           updatedItems[prevData.editingIndex] = prevData.currentItem;
         } else {
           updatedItems.push(prevData.currentItem);
         }
+
+        const orderTotal = updatedItems.reduce((total, item) => {
+          return total + item.totalPrice;
+        }, 0);
+
         return {
           ...prevData,
+          orderTotal,
           items: updatedItems,
           currentItem: {
             description: "",
@@ -97,7 +112,7 @@ const AddPurchaseOrder = () => {
     let errors = {};
     if (!formData.purchaseOrderNumber) errors.purchaseOrderNumber = "Required";
     if (!formData.date) errors.date = "Required";
-    if (!formData.receiver) errors.receiver = "Required";
+    if (!formData.orderedBy) errors.orderedBy = "Required";
     if (formData.items.length === 0)
       errors.items = "At least one item must be added";
 
@@ -106,34 +121,29 @@ const AddPurchaseOrder = () => {
       return;
     }
 
-    console.log("Purchase Order Submitted:", formData);
+    const newPurchaseOrder = {
+      purchaseOrderNumber: formData.purchaseOrderNumber,
+      date: formData.date,
+      orderedBy: formData.orderedBy,
+      items: formData.items,
+      orderTotal: formData.orderTotal,
+    };
 
-    setFormData({
-      purchaseOrderNumber: "",
-      date: "",
-      receiver: "",
-      items: [],
-      currentItem: {
-        description: "",
-        quantity: "",
-        unitPrice: "",
-        totalPrice: "",
-      },
-      editingIndex: null,
-    });
+    const success = () => {
+      navigate("/purchase-orders");
+    };
 
-    setValidationErrors({});
+    addPurchaseOrders(newPurchaseOrder, success);
   };
 
   return (
-    <div className="p-8 m-8 bg-white rounded-lg shadow-md w-full h-full flex flex-col">
-      <h2 className="text-lg font-semibold mb-6 text-center">
-        Add Purchase Order
-      </h2>
+    <div
+      className="p-4 mt-14 flex flex-col bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md justify-self-center self-center"
+      style={{ height: "calc(100vh - 180px)", width: "calc(100vw - 500px)" }}
+    >
+      <h2 className="text-lg font-semibold mb-6">Create Purchase Order</h2>
 
-      {/* Left (Purchase Order Fields) and Right (Add Items Fields) */}
       <div className="flex space-x-8">
-        {/* Left Section */}
         <div className="w-1/2">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -167,27 +177,25 @@ const AddPurchaseOrder = () => {
               )}
             </div>
             <div>
-              <Label htmlFor="receiver">Receiver</Label>
+              <Label htmlFor="orderedBy">Ordered By</Label>
               <TextInput
-                id="receiver"
-                name="receiver"
-                placeholder="Enter Receiver Name"
-                value={formData.receiver}
+                id="orderedBy"
+                name="orderedBy"
+                placeholder="Enter Customer Name"
+                value={formData.orderedBy}
                 onChange={handleChange}
-                className={validationErrors.receiver ? "border-red-500" : ""}
+                className={validationErrors.orderedBy ? "border-red-500" : ""}
               />
-              {validationErrors.receiver && (
+              {validationErrors.orderedBy && (
                 <p className="text-red-500 text-sm">
-                  {validationErrors.receiver}
+                  {validationErrors.orderedBy}
                 </p>
               )}
             </div>
           </form>
         </div>
-
-        {/* Right Section - Add Items */}
         <div className="w-1/2">
-          <Label>Add Item</Label>
+          <Label>Add Items</Label>
           <div className="space-y-2">
             <TextInput
               name="description"
@@ -219,29 +227,40 @@ const AddPurchaseOrder = () => {
               }
               readOnly
             />
-            <Button onClick={handleAddOrUpdateItem} className="ml-2">
+            <Button
+              onClick={handleAddOrUpdateItem}
+              className={`${primary_button_gradient} min-w-28 hover:ring-2 hover:ring-pink-900`}
+            >
               {formData.editingIndex !== null ? "Update" : "Add"}
             </Button>
           </div>
         </div>
       </div>
-
-      {/* Table for Added Items (Scrollable with Minimum Height) */}
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-4">Added Items</h3>
+        <h3 className="text-lg font-semibold mb-4">Order Items</h3>
         {validationErrors.items && (
           <p className="text-red-500 text-sm">{validationErrors.items}</p>
         )}
-        <div className="min-h-40 max-h-60 overflow-y-auto border rounded-lg shadow-md">
+        <div className="min-h-40 max-h-60 overflow-y-auto rounded-lg shadow-md">
           <Table className="w-full">
             <Table.Head>
-              <Table.HeadCell>Description</Table.HeadCell>
-              <Table.HeadCell>Quantity</Table.HeadCell>
-              <Table.HeadCell>Unit Price</Table.HeadCell>
-              <Table.HeadCell>Total Price</Table.HeadCell>
-              <Table.HeadCell>Actions</Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Description
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Quantity
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Unit Price
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Total Price
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Actions
+              </Table.HeadCell>
             </Table.Head>
-            <Table.Body>
+            <Table.Body className="bg-gray-100 dark:bg-gray-800">
               {formData.items.map((item, index) => (
                 <Table.Row
                   key={index}
@@ -250,32 +269,37 @@ const AddPurchaseOrder = () => {
                 >
                   <Table.Cell>{item.description}</Table.Cell>
                   <Table.Cell>{item.quantity}</Table.Cell>
-                  <Table.Cell>{item.unitPrice}</Table.Cell>
-                  <Table.Cell>{item.totalPrice}</Table.Cell>
+                  <Table.Cell>{formatCurrencyToLRK(item.unitPrice)}</Table.Cell>
                   <Table.Cell>
-                    <Button
-                      color="failure"
+                    {formatCurrencyToLRK(item.totalPrice)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleRemoveItem(index);
                       }}
+                      className="ml-4 font-medium text-red-500 hover:text-red-700"
                     >
                       Remove
-                    </Button>
+                    </button>
                   </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
           </Table>
         </div>
+        <p className="text-right mt-4">
+          <span className="font-semibold">Total : </span>{" "}
+          {formatCurrencyToLRK(formData.orderTotal)}
+        </p>
       </div>
 
-      {/* Submit Button (Centered) */}
       <div className="mt-6 mx-auto flex justify-center">
         <Button
           type="submit"
           onClick={handleSubmit}
-          className="bg-blue-500 text-white px-6"
+          className={`${primary_button_gradient} min-w-28 hover:ring-2 hover:ring-pink-900`}
         >
           Submit
         </Button>

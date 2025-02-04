@@ -16,7 +16,7 @@ import Profile from "./pages/User/Profile";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import NotFound from "./pages/PublicPages/NotFound";
 import PurchaseOrders from "./pages/PurchaseOrder/PurchaseOrders";
-import AddPurchaseOrder from "./pages/AddPurchaseOrder";
+import AddPurchaseOrder from "./pages/PurchaseOrder/AddPurchaseOrder";
 
 function App() {
   return (

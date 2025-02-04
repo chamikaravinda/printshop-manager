@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Modal, Table } from "flowbite-react";
 import { useSelector } from "react-redux";
+import { formatCurrencyToLRK } from "../../utils/commonFuntion";
 
 const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
   const { theme } = useSelector((state) => state.theme);
@@ -27,8 +28,8 @@ const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
             {purchaseOrder?.orderedBy}
           </p>
 
-          <div className="max-h-60 overflow-y-auto">
-            <Table>
+          <div className="max-h-60 overflow-y-auto shadow-md">
+            <Table className="">
               <Table.Head>
                 <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
                   Description
@@ -48,18 +49,8 @@ const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
                   <Table.Row key={index}>
                     <Table.Cell>{item.description}</Table.Cell>
                     <Table.Cell>{item.quantity}</Table.Cell>
-                    <Table.Cell>
-                      {item.unitPrice.toLocaleString("en-LK", {
-                        style: "currency",
-                        currency: "LKR",
-                      })}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.price.toLocaleString("en-LK", {
-                        style: "currency",
-                        currency: "LKR",
-                      })}
-                    </Table.Cell>
+                    <Table.Cell>{formatCurrencyToLRK(item.unitPrice)}</Table.Cell>
+                    <Table.Cell>{formatCurrencyToLRK(item.totalPrice)}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
@@ -67,10 +58,7 @@ const ViewPurchaseOrder = ({ purchaseOrder, onClose }) => {
           </div>
           <p className="text-right mt-4">
             <span className="font-semibold">Total : </span>{" "}
-            {purchaseOrder?.totalAmount.toLocaleString("en-LK", {
-              style: "currency",
-              currency: "LKR",
-            })}
+            {formatCurrencyToLRK(purchaseOrder?.orderTotal)}
           </p>
         </div>
       </Modal.Body>
@@ -83,7 +71,7 @@ ViewPurchaseOrder.propTypes = {
     purchaseOrderNumber: PropTypes.string,
     date: PropTypes.string,
     orderedBy: PropTypes.string,
-    totalAmount: PropTypes.number,
+    orderTotal: PropTypes.number,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         description: PropTypes.string,

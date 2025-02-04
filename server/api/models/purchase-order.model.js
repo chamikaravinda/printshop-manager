@@ -4,14 +4,14 @@ import { PURCHASE_ORDER_COLLECTION } from "../utils/commonConstant.js";
 const purchaseOrdersCollection = firestore.collection(PURCHASE_ORDER_COLLECTION);
 
 class PurchaseOrder {
-  constructor(purchaseOrderNumber, date, orderedBy, items, totalAmount) {
+  constructor(purchaseOrderNumber, date, orderedBy, items, orderTotal) {
     if (
       !purchaseOrderNumber ||
       !date ||
       !orderedBy ||
       !Array.isArray(items) ||
       items.length === 0 ||
-      totalAmount === undefined
+      orderTotal === undefined
     ) {
       throw new Error("Missing required fields or invalid format.");
     }
@@ -22,11 +22,11 @@ class PurchaseOrder {
           item.description &&
           item.quantity &&
           item.unitPrice !== undefined &&
-          item.price !== undefined
+          item.totalPrice !== undefined
       )
     ) {
       throw new Error(
-        "Each item must have a description, quantity, unit price, and price."
+        "Each item must have a description, quantity, unit price, and totalPrice."
       );
     }
 
@@ -34,7 +34,7 @@ class PurchaseOrder {
     this.date = date;
     this.orderedBy = orderedBy;
     this.items = items;
-    this.totalAmount = totalAmount;
+    this.orderTotal = orderTotal;
     this.createdAt = new Date().toISOString();
   }
 
@@ -44,14 +44,14 @@ class PurchaseOrder {
       data.date,
       data.orderedBy,
       data.items,
-      data.totalAmount
+      data.orderTotal
     );
     const docRef = await purchaseOrdersCollection.add({
       purchaseOrderNumber: newPurchaseOrder.purchaseOrderNumber,
       date: newPurchaseOrder.date,
       orderedBy: newPurchaseOrder.orderedBy,
       items: newPurchaseOrder.items,
-      totalAmount: newPurchaseOrder.totalAmount,
+      orderTotal: newPurchaseOrder.orderTotal,
       createdAt: newPurchaseOrder.createdAt,
     });
     return { id: docRef.id, ...newPurchaseOrder };
@@ -127,14 +127,14 @@ class PurchaseOrder {
       data.date,
       data.orderedBy,
       data.items,
-      data.totalAmount
+      data.orderTotal
     );
     await purchaseOrdersCollection.doc(id).update({
       purchaseOrderNumber: updatedPurchaseOrder.purchaseOrderNumber,
       date: updatedPurchaseOrder.date,
       orderedBy: updatedPurchaseOrder.orderedBy,
       items: updatedPurchaseOrder.items,
-      totalAmount: updatedPurchaseOrder.totalAmount,
+      orderTotal: updatedPurchaseOrder.orderTotal,
       updatedAt: new Date().toISOString(),
     });
     return { id, ...updatedPurchaseOrder };

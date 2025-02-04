@@ -3,8 +3,9 @@ import { useSelector } from "react-redux";
 import { Table } from "flowbite-react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { getUsers, deleteAnyUser } from "../../actions/user.action";
-import TwoOptionModel from "../../components/TwoOptionModel";
 import { USER_ROLE_ADMIN } from "../../utils/commonConstants";
+import ConfirmationPopUp from "../../components/ConfirmationPopUp";
+import { dispatchError } from "../../actions/notifications.action";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -41,6 +42,10 @@ export default function Users() {
 
   const handleDeleteUser = async () => {
     setShowModel(false);
+    if (currentUser.id === userIdToDelete) {
+      dispatchError("Can not delete you own account");  
+      return
+    };
     const success = () => {
       setUsers((prev) => prev.filter((user) => user.id !== userIdToDelete));
     };
@@ -49,7 +54,7 @@ export default function Users() {
 
   return (
     <div
-      className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar
+      className="table-auto md:mx-auto p-3 scrollbar
      scrollbar-track-slate-100 scrollbar-thumb-slate-300
       dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500"
     >
@@ -115,18 +120,11 @@ export default function Users() {
               Show More
             </button>
           )}
-          <TwoOptionModel
-            showModel={showModel}
-            onClose={() => {
-              setShowModel(false);
-            }}
-            ModelMessage="Are you sure you want to delete this user"
-            AcceptBtnText="Yes,I'm sure"
-            CancelBtnText="No,Cancel"
-            AcceptAction={handleDeleteUser}
-            CancelAction={() => {
-              setShowModel(false);
-            }}
+          <ConfirmationPopUp
+            message="Are you sure you want to delete this user"
+            openModal={showModel}
+            falseAction={() => setShowModel(false)}
+            trueAction={() => handleDeleteUser()}
           />
         </>
       ) : (
