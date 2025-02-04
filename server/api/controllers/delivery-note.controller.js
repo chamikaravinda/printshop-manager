@@ -5,6 +5,8 @@ export const createDeliveryNote = async (req, res, next) => {
   console.log("Request received to create delivery note", req.body);
 
   try {
+    //TODO: Validate if the delivery note number already exists
+    //TODO: Validate if the purchase order number exists
     const deliveryNote = await DeliveryNote.create(req.body);
     res
       .status(201)
@@ -26,6 +28,7 @@ export const getAllDeliveryNotes = async (req, res, next) => {
     const filters = {
       date: req.query.date,
       purchaseOrderNumber: req.query.purchaseOrderNumber,
+      deliveryNoteNumber: req.query.deliveryNoteNumber,
       receiver: req.query.receiver,
     };
     const startIndex = parseInt(req.query.startIndex, 10) || 0;
@@ -37,15 +40,15 @@ export const getAllDeliveryNotes = async (req, res, next) => {
       limit,
       order
     );
-    res
-      .status(200)
-      .json(
-        successHandler(
-          200,
-          "Delivery notes retrieved successfully",
-          deliveryNotes
-        )
-      );
+
+    const recordCount = await DeliveryNote.getCount(filters);
+
+    res.status(200).json(
+      successHandler(200, "Delivery notes retrieved successfully", {
+        deliveryNotes,
+        recordCount,
+      })
+    );
   } catch (error) {
     console.error("Failed to retrieve delivery notes.");
     console.error(error);
@@ -76,6 +79,8 @@ export const getDeliveryNoteById = async (req, res, next) => {
 export const updateDeliveryNote = async (req, res, next) => {
   console.log("Request received to update delivery Note", req.params.id);
   try {
+    //TODO: Validate if the delivery note number already exists
+    //TODO: Validate if the purchase order number exists
     const deliveryNote = await DeliveryNote.update(req.params.id, req.body);
     res
       .status(200)

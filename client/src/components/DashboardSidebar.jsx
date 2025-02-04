@@ -6,6 +6,7 @@ import {
   HiOutlineUser,
   HiChartPie,
 } from "react-icons/hi";
+import { MdOutlineEditNote } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { signOut } from "../actions/user.action";
 import { USER_ROLE_ADMIN } from "../utils/commonConstants";
@@ -32,6 +33,12 @@ export default function DashboardSidebar() {
                 <Sidebar.Item href="/purchase-orders">All Orders</Sidebar.Item>
                 <Sidebar.Item href="/purchase-order/add">
                   Create Order
+                </Sidebar.Item>
+              </Sidebar.Collapse>
+              <Sidebar.Collapse icon={MdOutlineEditNote} label="Delivery Notes">
+                <Sidebar.Item href="/delivery-notes">All Notes</Sidebar.Item>
+                <Sidebar.Item href="/delivery-note/add">
+                  Create Note
                 </Sidebar.Item>
               </Sidebar.Collapse>
               <Link to="/users">
