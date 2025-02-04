@@ -47,6 +47,8 @@ const AddPurchaseOrder = () => {
       currentItem: {
         ...prevData.currentItem,
         [name]: value,
+        totalPrice:
+          prevData.currentItem.quantity * prevData.currentItem.unitPrice || 0,
       },
     }));
   };
