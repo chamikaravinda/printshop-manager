@@ -126,10 +126,11 @@ const AddPurchaseOrder = () => {
   };
 
   return (
-    <div className="p-8 m-8 bg-white rounded-lg shadow-md w-full h-full flex flex-col">
-      <h2 className="text-lg font-semibold mb-6 text-center">
-        Add Purchase Order
-      </h2>
+    <div
+      className="p-4 m-4 flex flex-col bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md"
+      style={{ height: "calc(100vh - 90px)", width: "calc(100vw - 270px)" }}
+    >
+      <h2 className="text-lg font-semibold mb-6">Create Purchase Order</h2>
 
       {/* Left (Purchase Order Fields) and Right (Add Items Fields) */}
       <div className="flex space-x-8">
@@ -187,7 +188,7 @@ const AddPurchaseOrder = () => {
 
         {/* Right Section - Add Items */}
         <div className="w-1/2">
-          <Label>Add Item</Label>
+          <Label>Add Items</Label>
           <div className="space-y-2">
             <TextInput
               name="description"
@@ -219,7 +220,7 @@ const AddPurchaseOrder = () => {
               }
               readOnly
             />
-            <Button onClick={handleAddOrUpdateItem} className="ml-2">
+            <Button onClick={handleAddOrUpdateItem} className="object-center">
               {formData.editingIndex !== null ? "Update" : "Add"}
             </Button>
           </div>
@@ -228,20 +229,30 @@ const AddPurchaseOrder = () => {
 
       {/* Table for Added Items (Scrollable with Minimum Height) */}
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-4">Added Items</h3>
+        <h3 className="text-lg font-semibold mb-4">Order Items</h3>
         {validationErrors.items && (
           <p className="text-red-500 text-sm">{validationErrors.items}</p>
         )}
         <div className="min-h-40 max-h-60 overflow-y-auto border rounded-lg shadow-md">
           <Table className="w-full">
             <Table.Head>
-              <Table.HeadCell>Description</Table.HeadCell>
-              <Table.HeadCell>Quantity</Table.HeadCell>
-              <Table.HeadCell>Unit Price</Table.HeadCell>
-              <Table.HeadCell>Total Price</Table.HeadCell>
-              <Table.HeadCell>Actions</Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Description
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Quantity
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Unit Price
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Total Price
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
+                Actions
+              </Table.HeadCell>
             </Table.Head>
-            <Table.Body>
+            <Table.Body className="bg-gray-50 dark:bg-gray-600">
               {formData.items.map((item, index) => (
                 <Table.Row
                   key={index}
