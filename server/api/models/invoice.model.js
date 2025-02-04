@@ -88,6 +88,31 @@ class Invoice {
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
+  static async getCount(filters = {}) {
+    let query = invoicesCollection;
+
+    if (filters.date) {
+      query = query.where("date", "==", filters.date);
+    }
+
+    if (filters.purchaseOrderNumber) {
+      query = query.where(
+        "purchaseOrderNumber",
+        "==",
+        filters.purchaseOrderNumber
+      );
+    }
+
+    if (filters.receiver) {
+      query = query.where("receiver", "==", filters.receiver);
+    }
+
+    const snapshot = await query
+      .count()
+      .get();
+    return snapshot.data().count;
+  }
+
   static async getById(id) {
     const doc = await invoicesCollection.doc(id).get();
     if (!doc.exists) {

@@ -29,7 +29,7 @@ export const getAllPurchaseOrders = async (req, res, next) => {
     const filters = {
       date: req.query.date,
       purchaseOrderNumber: req.query.purchaseOrderNumber,
-      receiver: req.query.receiver,
+      orderedBy: req.query.orderedBy,
     };
     const startIndex = parseInt(req.query.startIndex, 10) || 0;
     const limit = parseInt(req.query.limit, 10) || 10;

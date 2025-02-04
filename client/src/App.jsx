@@ -18,6 +18,9 @@ import NotFound from "./pages/PublicPages/NotFound";
 import PurchaseOrders from "./pages/PurchaseOrder/PurchaseOrders";
 import AddPurchaseOrder from "./pages/PurchaseOrder/AddPurchaseOrder";
 import UpdatePurchaseOrder from "./pages/PurchaseOrder/UpdatePurchaseOrder";
+import DeliveryNotes from "./pages/DeliveryNote/DeliveryNotes";
+import AddDeliveryNote from "./pages/DeliveryNote/AddDeliveryNote";
+import UpdateDeliveryNote from "./pages/DeliveryNote/UpdateDeliveryNote";
 
 function App() {
   return (
@@ -40,9 +43,12 @@ function App() {
         <Route element={<AdminDashboardPrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
-          <Route path="/purchase-order/add" element={<AddPurchaseOrder />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/purchase-order/add" element={<AddPurchaseOrder />} />
           <Route path="/purchase-order/update/:id" element={<UpdatePurchaseOrder />} />
+          <Route path="/delivery-notes" element={<DeliveryNotes />} />
+          <Route path="/delivery-note/add" element={<AddDeliveryNote />} />
+          <Route path="/delivery-note/update/:id" element={<UpdateDeliveryNote />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
