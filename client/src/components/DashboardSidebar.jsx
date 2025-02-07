@@ -7,6 +7,7 @@ import {
   HiChartPie,
 } from "react-icons/hi";
 import { MdOutlineEditNote } from "react-icons/md";
+import { FaFileInvoiceDollar } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { signOut } from "../actions/user.action";
 import { USER_ROLE_ADMIN } from "../utils/commonConstants";
@@ -39,6 +40,12 @@ export default function DashboardSidebar() {
                 <Sidebar.Item href="/delivery-notes">All Notes</Sidebar.Item>
                 <Sidebar.Item href="/delivery-note/add">
                   Create Note
+                </Sidebar.Item>
+              </Sidebar.Collapse>
+              <Sidebar.Collapse icon={FaFileInvoiceDollar} label="Invoices">
+                <Sidebar.Item href="/invoices">All Invoices</Sidebar.Item>
+                <Sidebar.Item href="/invoice/add">
+                  Create Invoice
                 </Sidebar.Item>
               </Sidebar.Collapse>
               <Link to="/users">

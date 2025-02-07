@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Button, Modal, Table } from "flowbite-react";
 import { useSelector } from "react-redux";
-import { formatCurrencyToLRK } from "../../utils/commonFuntion";
+import { formatCurrencyToLRK } from "../../utils/commonFunction";
 import { primary_button_gradient, secondary_button_gradient } from "../../utils/commonConstants";
 import { useNavigate } from "react-router-dom";
 

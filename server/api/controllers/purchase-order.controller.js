@@ -79,6 +79,7 @@ export const getPurchaseOrderById = async (req, res, next) => {
 };
 
 export const updatePurchaseOrder = async (req, res, next) => {
+  //TODO: Check PO number already exists (Document ID should be same on new data and existing data)
   console.log("Request received to update purchase order", req.params.id);
   try {
     const purchaseOrder = await PurchaseOrder.update(req.params.id, req.body);

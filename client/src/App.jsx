@@ -21,6 +21,8 @@ import UpdatePurchaseOrder from "./pages/PurchaseOrder/UpdatePurchaseOrder";
 import DeliveryNotes from "./pages/DeliveryNote/DeliveryNotes";
 import AddDeliveryNote from "./pages/DeliveryNote/AddDeliveryNote";
 import UpdateDeliveryNote from "./pages/DeliveryNote/UpdateDeliveryNote";
+import Invoices from "./pages/Invoices/Invoices";
+import AddInvoice from "./pages/Invoices/AddInvoice";
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
           <Route path="/delivery-notes" element={<DeliveryNotes />} />
           <Route path="/delivery-note/add" element={<AddDeliveryNote />} />
           <Route path="/delivery-note/update/:id" element={<UpdateDeliveryNote />} />
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/invoice/add" element={<AddInvoice />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

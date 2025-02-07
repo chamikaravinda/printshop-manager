@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextInput, Button, Label, Table, Datepicker } from "flowbite-react";
 import { format } from "date-fns";
 import { primary_button_gradient } from "../../utils/commonConstants";
-import { formatCurrencyToLRK } from "../../utils/commonFunction";
-import { useNavigate } from "react-router-dom";
-import { addPurchaseOrders } from "../../actions/purchase-order.action";
+import { formatCurrencyToLRK } from "../../utils/commonFuntion";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getPurchaseOrder,
+  updatePurchaseOrders,
+} from "../../actions/purchase-order.action";
 
-const AddPurchaseOrder = () => {
+const UpdatePurchaseOrder = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [formData, setFormData] = useState({
+    id: "",
     purchaseOrderNumber: "",
     date: "",
     orderedBy: "",
@@ -24,6 +29,21 @@ const AddPurchaseOrder = () => {
   });
 
   const [validationErrors, setValidationErrors] = useState({});
+
+  useEffect(() => {
+    const success = (payload) => {
+      setFormData((prevData) => ({
+        ...prevData,
+        id: payload.id,
+        purchaseOrderNumber: payload.purchaseOrderNumber,
+        date: payload.date,
+        orderedBy: payload.orderedBy,
+        items: payload.items,
+        orderTotal: payload.orderTotal,
+      }));
+    };
+    getPurchaseOrder(id, success);
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -135,7 +155,7 @@ const AddPurchaseOrder = () => {
       navigate("/purchase-orders");
     };
 
-    addPurchaseOrders(newPurchaseOrder, success);
+    updatePurchaseOrders(newPurchaseOrder, formData.id, success);
   };
 
   return (
@@ -143,7 +163,7 @@ const AddPurchaseOrder = () => {
       className="p-4 mt-14 flex flex-col bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md justify-self-center self-center"
       style={{ height: "calc(100vh - 180px)", width: "calc(100vw - 500px)" }}
     >
-      <h2 className="text-lg font-semibold mb-6">Create Purchase Order</h2>
+      <h2 className="text-lg font-semibold mb-6">Update Purchase Order</h2>
 
       <div className="flex space-x-8">
         <div className="w-1/2">
@@ -243,7 +263,7 @@ const AddPurchaseOrder = () => {
         {validationErrors.items && (
           <p className="text-red-500 text-sm">{validationErrors.items}</p>
         )}
-        <div className="min-h-44 max-h-60 overflow-y-auto rounded-lg shadow-md">
+        <div className="min-h-40 max-h-60 overflow-y-auto rounded-lg shadow-md">
           <Table className="w-full">
             <Table.Head>
               <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
@@ -310,4 +330,4 @@ const AddPurchaseOrder = () => {
   );
 };
 
-export default AddPurchaseOrder;
+export default UpdatePurchaseOrder;

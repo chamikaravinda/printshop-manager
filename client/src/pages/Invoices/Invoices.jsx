@@ -5,28 +5,26 @@ import {
   primary_button_gradient,
   secondary_button_gradient,
 } from "../../utils/commonConstants";
-import {
-  deletePurchaseOrders,
-  getPurchaseOrders,
-} from "../../actions/purchase-order.action";
+import { deleteInvoice, getInvoices } from "../../actions/invoices.action";
 import { useNavigate } from "react-router-dom";
 import ConfirmationPopUp from "../../components/ConfirmationPopUp";
-import ViewPurchaseOrder from "./ViewPurchaseOrder";
+import ViewInvoice from "./ViewInvoice";
 import { formatCurrencyToLRK } from "../../utils/commonFunction";
 
-const PurchaseOrders = () => {
+const Invoices = () => {
   const navigate = useNavigate();
-  const [purchaseOrders, setPurchaseOrders] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [orderIdToDelete, setOrderIdToDelete] = useState("");
-  const [viewingPurchaseOrder, setViewingPurchaseOrder] = useState(null);
+  const [invoiceIdToDelete, setInvoiceIdToDelete] = useState("");
+  const [viewingInvoice, setViewingInvoice] = useState(null);
 
   const [filters, setFilters] = useState({
     date: "",
     receiver: "",
     purchaseOrderNumber: "",
-    order: "desc",
+    invoiceNumber: "",
+    invoice: "desc",
   });
   const [currentPage, setCurrentPage] = useState(1);
   //TODO: Change itemsPerPage to depends on screen height
@@ -34,21 +32,21 @@ const PurchaseOrders = () => {
 
   useEffect(() => {
     const success = (data) => {
-      setPurchaseOrders(data.purchaseOrders);
+      setInvoices(data.invoices);
       setTotalRecords(data.recordCount);
     };
-    getPurchaseOrders(0, 12, filters, success);
+    getInvoices(0, 12, filters, success);
   }, []);
 
   const handlePageChange = (page) => {
     const startIndex = (page - 1) * itemsPerPage;
     setCurrentPage(page);
     const success = (data) => {
-      setPurchaseOrders(data.purchaseOrders);
+      setInvoices(data.invoices);
       setTotalRecords(data.recordCount);
     };
 
-    getPurchaseOrders(startIndex, 12, filters, success);
+    getInvoices(startIndex, 12, filters, success);
   };
 
   const handleInputChange = (e) => {
@@ -58,38 +56,38 @@ const PurchaseOrders = () => {
 
   const handleSearch = () => {
     const success = (data) => {
-      setPurchaseOrders(data.purchaseOrders);
+      setInvoices(data.invoices);
       setTotalRecords(data.recordCount);
     };
 
-    getPurchaseOrders(0, 12, filters, success);
+    getInvoices(0, 12, filters, success);
   };
 
   const handleAddNewPO = () => {
-    navigate("/purchase-order/add");
+    navigate("/invoice/add");
   };
 
-  const handleDeletePO = () => {
+  const handleDeleteInvoice = () => {
     setShowConfirmation(false);
-    deletePurchaseOrders(orderIdToDelete, handlePageRefresh);
+    deleteInvoice(invoiceIdToDelete, handlePageRefresh);
   };
 
   const handlePageRefresh = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const success = (data) => {
-      setPurchaseOrders(data.purchaseOrders);
+      setInvoices(data.invoices);
       setTotalRecords(data.recordCount);
     };
 
-    getPurchaseOrders(startIndex, 12, filters, success);
+    getInvoices(startIndex, 12, filters, success);
   };
 
-  const handleViewPO = (purchaseOrder) => {
-    setViewingPurchaseOrder(purchaseOrder);
+  const handleViewInvoice = (purchaseOrder) => {
+    setViewingInvoice(purchaseOrder);
   };
 
-  const closeViewPO = () => {
-    setViewingPurchaseOrder(null);
+  const closeViewInvoice = () => {
+    setViewingInvoice(null);
   };
 
   return (
@@ -103,6 +101,12 @@ const PurchaseOrders = () => {
             name="purchaseOrderNumber"
             placeholder="Filter by PO Number"
             value={filters.purchaseOrderNumber}
+            onChange={handleInputChange}
+          />
+          <TextInput
+            name="invoiceNumber"
+            placeholder="Filter by Invoice Number"
+            value={filters.invoiceNumber}
             onChange={handleInputChange}
           />
           <TextInput
@@ -126,7 +130,12 @@ const PurchaseOrders = () => {
           </Button>
           <Button
             onClick={() =>
-              setFilters({ date: "", receiver: "", purchaseOrderNumber: "" })
+              setFilters({
+                date: "",
+                receiver: "",
+                purchaseOrderNumber: "",
+                invoiceNumber: "",
+              })
             }
             className={`${secondary_button_gradient} w-28 hover:ring-2 hover:ring-pink-900`}
           >
@@ -148,27 +157,29 @@ const PurchaseOrders = () => {
         <Table hoverable className="w-full table-auto shadow-md">
           <Table.Head>
             <Table.HeadCell>PO Number</Table.HeadCell>
+            <Table.HeadCell>Invoice Number</Table.HeadCell>
             <Table.HeadCell>Date</Table.HeadCell>
-            <Table.HeadCell>Ordered By</Table.HeadCell>
+            <Table.HeadCell>Received By</Table.HeadCell>
             <Table.HeadCell>Total</Table.HeadCell>
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {purchaseOrders &&
-              purchaseOrders.map((order) => (
+            {invoices &&
+              invoices.map((invoice) => (
                 <Table.Row
-                  key={order.id}
+                  key={invoice.id}
                   className="bg-white dark:bg-gray-800 dark:border-gray-600"
                 >
-                  <Table.Cell>{order.purchaseOrderNumber}</Table.Cell>
-                  <Table.Cell>{order.date}</Table.Cell>
-                  <Table.Cell>{order.orderedBy}</Table.Cell>
+                  <Table.Cell>{invoice.purchaseOrderNumber}</Table.Cell>
+                  <Table.Cell>{invoice.invoiceNumber}</Table.Cell>
+                  <Table.Cell>{invoice.date}</Table.Cell>
+                  <Table.Cell>{invoice.receiver}</Table.Cell>
                   <Table.Cell>
-                    {formatCurrencyToLRK(order.orderTotal)}
+                    {formatCurrencyToLRK(invoice.totalAmount)}
                   </Table.Cell>
                   <Table.Cell>
                     <button
-                      onClick={() => handleViewPO(order)}
+                      onClick={() => handleViewInvoice(invoice)}
                       className="font-medium text-blue-500 hover:text-blue-700"
                     >
                       View
@@ -176,7 +187,7 @@ const PurchaseOrders = () => {
                     <button
                       onClick={() => {
                         setShowConfirmation(true);
-                        setOrderIdToDelete(order.id);
+                        setInvoiceIdToDelete(invoice.id);
                       }}
                       className="ml-4 font-medium text-red-500 hover:text-red-700"
                     >
@@ -192,8 +203,8 @@ const PurchaseOrders = () => {
       <div className="mt-4 text-sm">
         <span>
           Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-          {purchaseOrders.length < itemsPerPage
-            ? (currentPage-1) *itemsPerPage + purchaseOrders.length
+          {invoices.length < itemsPerPage
+            ? (currentPage - 1) * itemsPerPage + invoices.length
             : currentPage * itemsPerPage}{" "}
           of {totalRecords} Entries
         </span>
@@ -207,18 +218,15 @@ const PurchaseOrders = () => {
       />
 
       <ConfirmationPopUp
-        message="Are sure you want to delete this purchase order"
+        message="Are sure you want to delete this invoice"
         openModal={showConfirmation}
         falseAction={() => setShowConfirmation(false)}
-        trueAction={() => handleDeletePO()}
+        trueAction={() => handleDeleteInvoice()}
       />
 
-      <ViewPurchaseOrder
-        purchaseOrder={viewingPurchaseOrder}
-        onClose={closeViewPO}
-      />
+      <ViewInvoice invoice={viewingInvoice} onClose={closeViewInvoice} />
     </div>
   );
 };
 
-export default PurchaseOrders;
+export default Invoices;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { TextInput, Button, Label, Table, Datepicker } from "flowbite-react";
 import { format } from "date-fns";
 import { primary_button_gradient } from "../../utils/commonConstants";
-import { formatCurrencyToLRK } from "../../utils/commonFuntion";
+import { formatCurrencyToLRK } from "../../utils/commonFunction";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getPurchaseOrder,
