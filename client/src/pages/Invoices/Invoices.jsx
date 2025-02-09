@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Pagination, TextInput, Button } from "flowbite-react";
+import { Table, Pagination, TextInput, Button, Badge } from "flowbite-react";
 import { MdClear, MdAdd, MdSearch } from "react-icons/md";
 import {
   primary_button_gradient,
@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmationPopUp from "../../components/ConfirmationPopUp";
 import ViewInvoice from "./ViewInvoice";
 import { formatCurrencyToLRK } from "../../utils/commonFunction";
+import { differenceInDays, parse } from "date-fns";
 
 const Invoices = () => {
   const navigate = useNavigate();
@@ -90,6 +91,11 @@ const Invoices = () => {
     setViewingInvoice(null);
   };
 
+  const calculateDateDifference = (date) => {
+    date = parse(date, "dd/MM/yyyy", new Date());
+    return differenceInDays(new Date(), date);
+  };
+
   return (
     <div
       className="p-4 flex flex-col"
@@ -161,6 +167,7 @@ const Invoices = () => {
             <Table.HeadCell>Date</Table.HeadCell>
             <Table.HeadCell>Received By</Table.HeadCell>
             <Table.HeadCell>Total</Table.HeadCell>
+            <Table.HeadCell>Payment Status</Table.HeadCell>
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
@@ -176,6 +183,21 @@ const Invoices = () => {
                   <Table.Cell>{invoice.receiver}</Table.Cell>
                   <Table.Cell>
                     {formatCurrencyToLRK(invoice.totalAmount)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {invoice.paid ? (
+                      <Badge color="green" className="w-16">
+                        Paid
+                      </Badge>
+                    ) : calculateDateDifference(invoice.date) < 30 ? (
+                      <Badge color="warning" className="w-16">
+                        Pending
+                      </Badge>
+                    ) : (
+                      <Badge color="red" className="w-16">
+                        Not paid
+                      </Badge>
+                    )}
                   </Table.Cell>
                   <Table.Cell>
                     <button
@@ -224,7 +246,9 @@ const Invoices = () => {
         trueAction={() => handleDeleteInvoice()}
       />
 
-      <ViewInvoice invoice={viewingInvoice} onClose={closeViewInvoice} />
+      {viewingInvoice && (
+        <ViewInvoice invoice={viewingInvoice} onClose={closeViewInvoice} />
+      )}
     </div>
   );
 };

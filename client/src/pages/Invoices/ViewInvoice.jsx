@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Button, Modal, Table, Badge } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { formatCurrencyToLRK } from "../../utils/commonFunction";
+import { differenceInDays, parse } from "date-fns";
 import {
   primary_button_gradient,
   secondary_button_gradient,
@@ -14,6 +15,11 @@ const ViewInvoice = ({ invoice, onClose }) => {
 
   const updateInvoice = () => {
     navigate(`/invoice/update/${invoice.id}`);
+  };
+
+  const calculateDateDifference = (date) => {
+    date = parse(date, "dd/MM/yyyy", new Date());
+    return differenceInDays(new Date(), date);
   };
 
   return (
@@ -47,9 +53,19 @@ const ViewInvoice = ({ invoice, onClose }) => {
           </p>
           <p className="flex items-center">
             <span className="font-semibold mr-2">Payment Status : </span>
-            <Badge color={invoice?.paid ? "green" : "red"}>
-              {invoice?.paid ? "Paid" : "Pending"}
-            </Badge>
+            {invoice?.paid ? (
+              <Badge color="green" className="w-16">
+                Paid
+              </Badge>
+            ) : calculateDateDifference(invoice?.date) < 30 ? (
+              <Badge color="warning" className="w-16">
+                Pending
+              </Badge>
+            ) : (
+              <Badge color="red" className="w-16">
+                Not paid
+              </Badge>
+            )}
           </p>
         </div>
 
@@ -75,13 +91,15 @@ const ViewInvoice = ({ invoice, onClose }) => {
                   <Table.Cell>{item.description}</Table.Cell>
                   <Table.Cell>{item.quantity}</Table.Cell>
                   <Table.Cell>{formatCurrencyToLRK(item.unitPrice)}</Table.Cell>
-                  <Table.Cell>{formatCurrencyToLRK(item.totalPrice)}</Table.Cell>
+                  <Table.Cell>
+                    {formatCurrencyToLRK(item.totalPrice)}
+                  </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
           </Table>
         </div>
-        <p className="text-right mt-4">
+        <p className="text-right mt-4 dark:text-gray-50">
           <span className="font-semibold">Total : </span>
           {formatCurrencyToLRK(invoice?.totalAmount)}
         </p>

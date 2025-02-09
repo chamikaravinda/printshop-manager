@@ -1,30 +1,38 @@
 import { useEffect, useState } from "react";
-import { TextInput, Button, Label, Table, Datepicker } from "flowbite-react";
+import {
+  TextInput,
+  Button,
+  Label,
+  Table,
+  Datepicker,
+  Badge,
+} from "flowbite-react";
 import { format } from "date-fns";
 import { primary_button_gradient } from "../../utils/commonConstants";
-import { formatCurrencyToLRK } from "../../utils/commonFuntion";
+import { formatCurrencyToLRK } from "../../utils/commonFunction";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  getPurchaseOrder,
-  updatePurchaseOrders,
-} from "../../actions/purchase-order.action";
+import { getInvoice, updateInvoice } from "../../actions/invoices.action";
+import { HiOutlineX } from "react-icons/hi";
 
-const UpdatePurchaseOrder = () => {
-  const navigate = useNavigate();
+const UpdateInvoice = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    id: "",
+    invoiceNumber: "",
     purchaseOrderNumber: "",
     date: "",
-    orderedBy: "",
+    receiver: "",
     items: [],
-    orderTotal: 0,
+    totalAmount: 0,
+    paid: false,
+    deliveryNotes: [],
     currentItem: {
       description: "",
       quantity: "",
       unitPrice: "",
       totalPrice: "",
     },
+    currentDeliveryNote: "",
     editingIndex: null,
   });
 
@@ -35,14 +43,17 @@ const UpdatePurchaseOrder = () => {
       setFormData((prevData) => ({
         ...prevData,
         id: payload.id,
+        invoiceNumber: payload.invoiceNumber,
         purchaseOrderNumber: payload.purchaseOrderNumber,
         date: payload.date,
-        orderedBy: payload.orderedBy,
+        receiver: payload.receiver,
         items: payload.items,
-        orderTotal: payload.orderTotal,
+        totalAmount: payload.totalAmount,
+        deliveryNotes: payload.deliveryNotes,
+        paid: payload.paid,
       }));
     };
-    getPurchaseOrder(id, success);
+    getInvoice(id, success);
   }, [id]);
 
   const handleChange = (e) => {
@@ -91,13 +102,13 @@ const UpdatePurchaseOrder = () => {
           updatedItems.push(prevData.currentItem);
         }
 
-        const orderTotal = updatedItems.reduce((total, item) => {
+        const totalAmount = updatedItems.reduce((total, item) => {
           return total + item.totalPrice;
         }, 0);
 
         return {
           ...prevData,
-          orderTotal,
+          totalAmount,
           items: updatedItems,
           currentItem: {
             description: "",
@@ -132,9 +143,10 @@ const UpdatePurchaseOrder = () => {
     e.preventDefault();
 
     let errors = {};
+    if (!formData.invoiceNumber) errors.invoiceNumber = "Required";
     if (!formData.purchaseOrderNumber) errors.purchaseOrderNumber = "Required";
     if (!formData.date) errors.date = "Required";
-    if (!formData.orderedBy) errors.orderedBy = "Required";
+    if (!formData.receiver) errors.receiver = "Required";
     if (formData.items.length === 0)
       errors.items = "At least one item must be added";
 
@@ -143,19 +155,43 @@ const UpdatePurchaseOrder = () => {
       return;
     }
 
-    const newPurchaseOrder = {
+    const newInvoice = {
       purchaseOrderNumber: formData.purchaseOrderNumber,
+      invoiceNumber: formData.invoiceNumber,
       date: formData.date,
-      orderedBy: formData.orderedBy,
+      receiver: formData.receiver,
       items: formData.items,
-      orderTotal: formData.orderTotal,
+      totalAmount: formData.totalAmount,
+      deliveryNotes: formData.deliveryNotes,
+      paid: formData.paid,
     };
 
     const success = () => {
-      navigate("/purchase-orders");
+      navigate("/invoices");
     };
 
-    updatePurchaseOrders(newPurchaseOrder, formData.id, success);
+    updateInvoice(newInvoice, formData.id, success);
+  };
+
+  const addDeliveryNote = () => {
+    setFormData((prevData) => {
+      const updatedDeliveryNotes = [
+        ...prevData.deliveryNotes,
+        prevData.currentDeliveryNote,
+      ];
+      return {
+        ...prevData,
+        deliveryNotes: updatedDeliveryNotes,
+        currentDeliveryNote: "",
+      };
+    });
+  };
+
+  const removeDeliveryNote = (index) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      deliveryNotes: prevData.deliveryNotes.filter((_, i) => i !== index),
+    }));
   };
 
   return (
@@ -163,11 +199,29 @@ const UpdatePurchaseOrder = () => {
       className="p-4 mt-14 flex flex-col bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md justify-self-center self-center"
       style={{ height: "calc(100vh - 180px)", width: "calc(100vw - 500px)" }}
     >
-      <h2 className="text-lg font-semibold mb-6">Update Purchase Order</h2>
+      <h2 className="text-lg font-semibold mb-4">Update Invoice</h2>
 
       <div className="flex space-x-8">
         <div className="w-1/2">
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="invoiceNumber">Invoice Number</Label>
+              <TextInput
+                id="invoiceNumber"
+                name="invoiceNumber"
+                placeholder="Enter Invoice Number"
+                value={formData.invoiceNumber}
+                onChange={handleChange}
+                className={
+                  validationErrors.invoiceNumber ? "border-red-500" : ""
+                }
+              />
+              {validationErrors.invoiceNumber && (
+                <p className="text-red-500 text-sm">
+                  {validationErrors.invoiceNumber}
+                </p>
+              )}
+            </div>
             <div>
               <Label htmlFor="purchaseOrderNumber">Purchase Order Number</Label>
               <TextInput
@@ -199,24 +253,85 @@ const UpdatePurchaseOrder = () => {
               )}
             </div>
             <div>
-              <Label htmlFor="orderedBy">Ordered By</Label>
+              <Label htmlFor="receiver">Received By</Label>
               <TextInput
-                id="orderedBy"
-                name="orderedBy"
+                id="receiver"
+                name="receiver"
                 placeholder="Enter Customer Name"
-                value={formData.orderedBy}
+                value={formData.receiver}
                 onChange={handleChange}
-                className={validationErrors.orderedBy ? "border-red-500" : ""}
+                className={validationErrors.receiver ? "border-red-500" : ""}
               />
-              {validationErrors.orderedBy && (
+              {validationErrors.receiver && (
                 <p className="text-red-500 text-sm">
-                  {validationErrors.orderedBy}
+                  {validationErrors.receiver}
                 </p>
               )}
+            </div>
+            <div>
+              <label
+                htmlFor="paid"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Payment Status
+              </label>
+              <select
+                id="paid"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 dark:bg-gray-700 
+                dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-cyan-500 
+                dark:focus:border-cyan-500"
+                name="paid"
+                value={formData.paid}
+                onChange={handleChange}
+              >
+                <option
+                  selected={formData.paid}
+                  value={true}
+                  className="focus:bg-gray-700 dark:focus:bg-gray-700"
+                >
+                  Paid
+                </option>
+                <option selected={formData.paid} value={false}>
+                  Not Paid
+                </option>
+              </select>
             </div>
           </form>
         </div>
         <div className="w-1/2">
+          <Label>Add Delivery notes</Label>
+          <div className="flex flex-auto pb-1 justify-between">
+            <TextInput
+              id="currentDeliveryNote"
+              name="currentDeliveryNote"
+              placeholder="Enter Delivery Note Number"
+              value={formData.currentDeliveryNote}
+              onChange={handleChange}
+              className="w-3/4"
+            />
+            <Button
+              onClick={addDeliveryNote}
+              className={`${primary_button_gradient} min-w-28 hover:ring-2 hover:ring-pink-900`}
+            >
+              {formData.editingIndex !== null ? "Update" : "Add"}
+            </Button>
+          </div>
+          <div className="flex flex-row pb-4">
+            {formData.deliveryNotes.length > 0 &&
+              formData.deliveryNotes.map((note, index) => {
+                return (
+                  <Badge
+                    icon={HiOutlineX}
+                    className="bg-slate-500 text-white m-w-12 m-1"
+                    key={index}
+                    onClick={() => removeDeliveryNote(index)}
+                  >
+                    {note}
+                  </Badge>
+                );
+              })}
+          </div>
           <Label>Add Items</Label>
           <div className="space-y-2">
             <TextInput
@@ -259,11 +374,11 @@ const UpdatePurchaseOrder = () => {
         </div>
       </div>
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-4">Order Items</h3>
+        <h3 className="text-lg font-semibold mb-2">Invoice Items</h3>
         {validationErrors.items && (
           <p className="text-red-500 text-sm">{validationErrors.items}</p>
         )}
-        <div className="min-h-40 max-h-60 overflow-y-auto rounded-lg shadow-md">
+        <div className="min-h-44 max-h-60 overflow-y-auto rounded-lg shadow-md">
           <Table className="w-full">
             <Table.Head>
               <Table.HeadCell className="bg-zinc-200 dark:bg-gray-700">
@@ -313,11 +428,11 @@ const UpdatePurchaseOrder = () => {
         </div>
         <p className="text-right mt-4">
           <span className="font-semibold">Total : </span>{" "}
-          {formatCurrencyToLRK(formData.orderTotal)}
+          {formatCurrencyToLRK(formData.totalAmount)}
         </p>
       </div>
 
-      <div className="mt-6 mx-auto flex justify-center">
+      <div className="mx-auto flex justify-center">
         <Button
           type="submit"
           onClick={handleSubmit}
@@ -330,4 +445,4 @@ const UpdatePurchaseOrder = () => {
   );
 };
 
-export default UpdatePurchaseOrder;
+export default UpdateInvoice;

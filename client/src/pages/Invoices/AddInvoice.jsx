@@ -143,6 +143,7 @@ const AddInvoice = () => {
       items: formData.items,
       totalAmount: formData.totalAmount,
       deliveryNotes: formData.deliveryNotes,
+      paid: false,
     };
 
     const success = () => {
