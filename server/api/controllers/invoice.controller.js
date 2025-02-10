@@ -3,7 +3,10 @@ import { errorHandler, successHandler } from "../utils/response.js";
 
 export const createInvoice = async (req, res, next) => {
   console.log("Request received to create invoice", req.body);
-
+  //TODO: Validate if the invoice number already exists
+  //TODO: Validate if the purchase order number exists
+  //TODO: Validate if the delivery note numbers exists
+  //TODO: Check if the delivery note numbers not include in another invoice
   try {
     const invoice = await Invoice.create(req.body);
     res
@@ -24,6 +27,7 @@ export const getAllInvoices = async (req, res, next) => {
     const filters = {
       date: req.query.date,
       purchaseOrderNumber: req.query.purchaseOrderNumber,
+      invoiceNumber: req.query.invoiceNumber,
       receiver: req.query.receiver,
     };
     const startIndex = parseInt(req.query.startIndex, 10) || 0;
@@ -35,7 +39,10 @@ export const getAllInvoices = async (req, res, next) => {
     res
       .status(200)
       .json(
-        successHandler(200, "Invoices retrieved successfully", { invoices,recordCount })
+        successHandler(200, "Invoices retrieved successfully", {
+          invoices,
+          recordCount,
+        })
       );
   } catch (error) {
     console.error("Failed to retrieve invoices.");

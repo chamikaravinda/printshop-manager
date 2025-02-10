@@ -1,3 +1,4 @@
+
 export const formatCurrencyToLRK = (value) => {
   return parseFloat(value || 0).toLocaleString("en-LK", {
     style: "currency",
@@ -6,3 +7,4 @@ export const formatCurrencyToLRK = (value) => {
     maximumFractionDigits: 2,
   });
 };
+
