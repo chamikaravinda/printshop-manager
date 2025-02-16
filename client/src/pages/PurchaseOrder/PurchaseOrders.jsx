@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Table, Pagination, TextInput, Button } from "flowbite-react";
+import {
+  Table,
+  Pagination,
+  TextInput,
+  Button,
+  Datepicker,
+} from "flowbite-react";
 import { MdClear, MdAdd, MdSearch } from "react-icons/md";
 import {
   primary_button_gradient,
@@ -13,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmationPopUp from "../../components/ConfirmationPopUp";
 import ViewPurchaseOrder from "./ViewPurchaseOrder";
 import { formatCurrencyToLRK } from "../../utils/commonFunction";
+import { format } from "date-fns";
 
 const PurchaseOrders = () => {
   const navigate = useNavigate();
@@ -54,6 +61,13 @@ const PurchaseOrders = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
+
+  const handleDateChange = (date) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      date: format(date, "dd/MM/yyyy"),
+    }));
   };
 
   const handleSearch = () => {
@@ -105,11 +119,13 @@ const PurchaseOrders = () => {
             value={filters.purchaseOrderNumber}
             onChange={handleInputChange}
           />
-          <TextInput
+          <Datepicker
+            id="date"
             name="date"
-            placeholder="Filter by Date"
             value={filters.date}
-            onChange={handleInputChange}
+            onSelectedDateChanged={handleDateChange}
+            format="dd/MM/yyyy"
+            placeholder="Filter by Date"
           />
           <TextInput
             name="receiver"
@@ -193,7 +209,7 @@ const PurchaseOrders = () => {
         <span>
           Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
           {purchaseOrders.length < itemsPerPage
-            ? (currentPage-1) *itemsPerPage + purchaseOrders.length
+            ? (currentPage - 1) * itemsPerPage + purchaseOrders.length
             : currentPage * itemsPerPage}{" "}
           of {totalRecords} Entries
         </span>

@@ -4,7 +4,7 @@ import { DELIVERY_NOTE_COLLECTION } from "../utils/commonConstant.js";
 const deliveryNotesCollection = firestore.collection(DELIVERY_NOTE_COLLECTION);
 
 class DeliveryNote {
-  constructor(purchaseOrderNumber,deliveryNoteNumber, date, receiver, items) {
+  constructor(purchaseOrderNumber, deliveryNoteNumber, date, receiver, items) {
     if (
       !purchaseOrderNumber ||
       !deliveryNoteNumber ||
@@ -74,11 +74,11 @@ class DeliveryNote {
       query = query.where("receiver", "==", filters.receiver);
     }
 
-    const snapshot = await query
-      .orderBy("createdAt", order)
-      .offset(startIndex)
-      .limit(limit)
-      .get();
+    if (Object.keys(filters).length === 0) {
+      query = query.orderBy("createdAt", order);
+    }
+
+    const snapshot = await query.offset(startIndex).limit(limit).get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
@@ -109,9 +109,7 @@ class DeliveryNote {
       query = query.where("receiver", "==", filters.receiver);
     }
 
-    const snapshot = await query
-      .count()
-      .get();
+    const snapshot = await query.count().get();
     return snapshot.data().count;
   }
 
@@ -120,6 +118,20 @@ class DeliveryNote {
     if (!doc.exists) {
       throw new Error("Delivery note not found.");
     }
+    return { id: doc.id, ...doc.data() };
+  }
+
+  static async getByDeliveryNoteNumber(deliveryNoteNumber) {
+    const snapshot = await deliveryNotesCollection
+      .where("deliveryNoteNumber", "==", deliveryNoteNumber)
+      .get();
+
+    if (snapshot.empty) {
+      return;
+    }
+    
+    const doc = snapshot.docs[0];
+
     return { id: doc.id, ...doc.data() };
   }
 

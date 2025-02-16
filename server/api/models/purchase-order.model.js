@@ -1,7 +1,9 @@
 import { firestore } from "../config/firebase.config.js";
 import { PURCHASE_ORDER_COLLECTION } from "../utils/commonConstant.js";
 
-const purchaseOrdersCollection = firestore.collection(PURCHASE_ORDER_COLLECTION);
+const purchaseOrdersCollection = firestore.collection(
+  PURCHASE_ORDER_COLLECTION
+);
 
 class PurchaseOrder {
   constructor(purchaseOrderNumber, date, orderedBy, items, orderTotal) {
@@ -76,11 +78,11 @@ class PurchaseOrder {
       query = query.where("orderedBy", "==", filters.orderedBy);
     }
 
-    const snapshot = await query
-      .orderBy("createdAt", order)
-      .offset(startIndex)
-      .limit(limit)
-      .get();
+    if (Object.keys(filters).length === 0) {
+      query = query.orderBy("createdAt", order);
+    }
+
+    const snapshot = await query.offset(startIndex).limit(limit).get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
@@ -103,17 +105,29 @@ class PurchaseOrder {
       query = query.where("orderedBy", "==", filters.orderedBy);
     }
 
-    const snapshot = await query
-      .count()
-      .get();
+    const snapshot = await query.count().get();
     return snapshot.data().count;
   }
 
   static async getById(id) {
     const doc = await purchaseOrdersCollection.doc(id).get();
     if (!doc.exists) {
-      throw new Error("Purchase order not found.");
+      return;
     }
+    return { id: doc.id, ...doc.data() };
+  }
+
+  static async getByPurchaseOrderNumber(purchaseOrderNumber) {
+    const snapshot = await purchaseOrdersCollection
+      .where("purchaseOrderNumber", "==", purchaseOrderNumber)
+      .get();
+
+    if (snapshot.empty) {
+      return;
+    }
+    
+    const doc = snapshot.docs[0];
+
     return { id: doc.id, ...doc.data() };
   }
 

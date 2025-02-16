@@ -1,12 +1,26 @@
 import DeliveryNote from "../models/delivery-note.model.js";
+import PurchaseOrder from "../models/purchase-order.model.js";
 import { errorHandler, successHandler } from "../utils/response.js";
 
 export const createDeliveryNote = async (req, res, next) => {
   console.log("Request received to create delivery note", req.body);
 
   try {
-    //TODO: Validate if the delivery note number already exists
-    //TODO: Validate if the purchase order number exists
+    const { purchaseOrderNumber, deliveryNoteNumber } = req.body;
+
+    const [poForDeliveryNote, existingDeliveryNote] = await Promise.all([
+      PurchaseOrder.getByPurchaseOrderNumber(purchaseOrderNumber),
+      DeliveryNote.getByDeliveryNoteNumber(deliveryNoteNumber),
+    ]);
+
+    if (!poForDeliveryNote) {
+      return next(errorHandler(400, "Purchase order not found."));
+    }
+
+    if (existingDeliveryNote) {
+      return next(errorHandler(400, "Delivery note number already exists."));
+    }
+    
     const deliveryNote = await DeliveryNote.create(req.body);
     res
       .status(201)
@@ -34,14 +48,16 @@ export const getAllDeliveryNotes = async (req, res, next) => {
     const startIndex = parseInt(req.query.startIndex, 10) || 0;
     const limit = parseInt(req.query.limit, 10) || 10;
     const order = req.query.order === "desc" ? "desc" : "asc";
-    const deliveryNotes = await DeliveryNote.getAll(
-      filters,
-      startIndex,
-      limit,
-      order
-    );
 
-    const recordCount = await DeliveryNote.getCount(filters);
+    const [deliveryNotes, recordCount] = await Promise.all([
+      DeliveryNote.getAll(
+        filters,
+        parseInt(startIndex, 10),
+        parseInt(limit, 10),
+        order === "desc" ? "desc" : "asc"
+      ),
+      DeliveryNote.getCount(filters),
+    ]);
 
     res.status(200).json(
       successHandler(200, "Delivery notes retrieved successfully", {
@@ -79,8 +95,19 @@ export const getDeliveryNoteById = async (req, res, next) => {
 export const updateDeliveryNote = async (req, res, next) => {
   console.log("Request received to update delivery Note", req.params.id);
   try {
-    //TODO: Validate if the delivery note number already exists
-    //TODO: Validate if the purchase order number exists
+    const [poForDeliveryNote, existingDeliveryNote] = await Promise.all([
+      PurchaseOrder.getByPurchaseOrderNumber(req.body.purchaseOrderNumber),
+      DeliveryNote.getByDeliveryNoteNumber(req.body.deliveryNoteNumber),
+    ]);
+
+    if (!poForDeliveryNote) {
+      return next(errorHandler(400, "Purchase order not found."));
+    }
+
+    if (existingDeliveryNote && existingDeliveryNote.id !== id) {
+      return next(errorHandler(400, "Delivery note number already exists."));
+    }
+
     const deliveryNote = await DeliveryNote.update(req.params.id, req.body);
     res
       .status(200)

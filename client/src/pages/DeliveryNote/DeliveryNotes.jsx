@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Table, Pagination, TextInput, Button } from "flowbite-react";
+import {
+  Table,
+  Pagination,
+  TextInput,
+  Button,
+  Datepicker,
+} from "flowbite-react";
 import { MdClear, MdAdd, MdSearch } from "react-icons/md";
 import {
   primary_button_gradient,
@@ -7,8 +13,12 @@ import {
 } from "../../utils/commonConstants";
 import { useNavigate } from "react-router-dom";
 import ConfirmationPopUp from "../../components/ConfirmationPopUp";
-import { deleteDeliveryNote, getDeliveryNotes } from "../../actions/delivery-note.action";
+import {
+  deleteDeliveryNote,
+  getDeliveryNotes,
+} from "../../actions/delivery-note.action";
 import ViewDeliveryNote from "./ViewDeliveryNote";
+import { format } from "date-fns";
 
 const DeliveryNotes = () => {
   const navigate = useNavigate();
@@ -53,6 +63,13 @@ const DeliveryNotes = () => {
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
+  const handleDateChange = (date) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      date: format(date, "dd/MM/yyyy"),
+    }));
+  };
+  
   const handleSearch = () => {
     const success = (data) => {
       setDeliveryNotes(data.deliveryNotes);
@@ -108,11 +125,13 @@ const DeliveryNotes = () => {
             value={filters.deliveryNoteNumber}
             onChange={handleInputChange}
           />
-          <TextInput
+          <Datepicker
+            id="date"
             name="date"
-            placeholder="Filter by Date"
             value={filters.date}
-            onChange={handleInputChange}
+            onSelectedDateChanged={handleDateChange}
+            format="dd/MM/yyyy"
+            placeholder="Filter by Date"
           />
           <TextInput
             name="receiver"
@@ -129,7 +148,12 @@ const DeliveryNotes = () => {
           </Button>
           <Button
             onClick={() =>
-              setFilters({ date: "", receiver: "", purchaseOrderNumber: "", deliveryNoteNumber: "" })
+              setFilters({
+                date: "",
+                receiver: "",
+                purchaseOrderNumber: "",
+                deliveryNoteNumber: "",
+              })
             }
             className={`${secondary_button_gradient} w-28 hover:ring-2 hover:ring-pink-900`}
           >
@@ -194,7 +218,7 @@ const DeliveryNotes = () => {
         <span>
           Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
           {deliveryNotes.length < itemsPerPage
-            ? (currentPage-1) *itemsPerPage + deliveryNotes.length
+            ? (currentPage - 1) * itemsPerPage + deliveryNotes.length
             : currentPage * itemsPerPage}{" "}
           of {totalRecords} Entries
         </span>

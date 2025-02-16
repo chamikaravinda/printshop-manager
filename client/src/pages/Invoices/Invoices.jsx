@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Table, Pagination, TextInput, Button, Badge } from "flowbite-react";
+import {
+  Table,
+  Pagination,
+  TextInput,
+  Button,
+  Badge,
+  Datepicker,
+} from "flowbite-react";
 import { MdClear, MdAdd, MdSearch } from "react-icons/md";
 import {
   primary_button_gradient,
@@ -10,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmationPopUp from "../../components/ConfirmationPopUp";
 import ViewInvoice from "./ViewInvoice";
 import { formatCurrencyToLRK } from "../../utils/commonFunction";
-import { differenceInDays, parse } from "date-fns";
+import { differenceInDays, format, parse } from "date-fns";
 
 const Invoices = () => {
   const navigate = useNavigate();
@@ -52,7 +59,17 @@ const Invoices = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: JSON.parse(value),
+    }));
+  };
+
+  const handleDateChange = (date) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      date: format(date, "dd/MM/yyyy"),
+    }));
   };
 
   const handleSearch = () => {
@@ -115,11 +132,13 @@ const Invoices = () => {
             value={filters.invoiceNumber}
             onChange={handleInputChange}
           />
-          <TextInput
+          <Datepicker
+            id="date"
             name="date"
-            placeholder="Filter by Date"
             value={filters.date}
-            onChange={handleInputChange}
+            onSelectedDateChanged={handleDateChange}
+            format="dd/MM/yyyy"
+            placeholder="Filter by Date"
           />
           <TextInput
             name="receiver"
@@ -127,6 +146,26 @@ const Invoices = () => {
             value={filters.receiver}
             onChange={handleInputChange}
           />
+          <select
+            id="paid"
+            className={`${
+              filters.paid
+                ? "text-gray-800 dark:text-gray-50"
+                : "text-gray-500 dark:text-gray-400"
+            } bg-gray-50 border border-gray-300  text-sm rounded-lg 
+                focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 dark:bg-gray-700 
+                dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-cyan-500 
+                dark:focus:border-cyan-500`}
+            name="paid"
+            value={filters.paid}
+            onChange={handleInputChange}
+          >
+            <option disabled selected={!filters.paid}>
+              Filter By Payment status
+            </option>
+            <option value={true}>Paid</option>
+            <option value={false}>Not Paid</option>
+          </select>
           <Button
             onClick={handleSearch}
             className={`${primary_button_gradient} w-28 hover:ring-2 hover:ring-pink-900`}
@@ -195,7 +234,7 @@ const Invoices = () => {
                       </Badge>
                     ) : (
                       <Badge color="red" className="w-16">
-                        Not paid
+                        Overdue
                       </Badge>
                     )}
                   </Table.Cell>
