@@ -16,7 +16,7 @@ export default function Home() {
             Labels | Bar codes | Stickers | Leaflet | Posters | Hang Tags
           </p>
           <Link to="/">
-            <Button type="submit" className={primary_gradient} outline>
+            <Button type="submit" className={`${primary_gradient}`}>
               Explore
             </Button>
           </Link>

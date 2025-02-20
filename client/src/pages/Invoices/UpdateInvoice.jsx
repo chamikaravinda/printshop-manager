@@ -163,7 +163,7 @@ const UpdateInvoice = () => {
       items: formData.items,
       totalAmount: formData.totalAmount,
       deliveryNotes: formData.deliveryNotes,
-      paid: formData.paid,
+      paid: JSON.parse(formData.paid),
     };
 
     const success = () => {

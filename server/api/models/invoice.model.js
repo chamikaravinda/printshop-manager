@@ -99,11 +99,15 @@ class Invoice {
       query = query.where("receiver", "==", filters.receiver);
     }
 
-    const snapshot = await query
-      .orderBy("createdAt", order)
-      .offset(startIndex)
-      .limit(limit)
-      .get();
+    if (filters.paid) {
+      query = query.where("paid", "==", JSON.parse(filters.paid));
+    }
+
+    if (Object.keys(filters).length === 0) {
+      query = query.orderBy("createdAt", order);
+    }
+
+    const snapshot = await query.offset(startIndex).limit(limit).get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
@@ -130,6 +134,10 @@ class Invoice {
       query = query.where("receiver", "==", filters.receiver);
     }
 
+    if (filters.paid) {
+      query = query.where("paid", "==", JSON.parse(filters.paid));
+    }
+
     const snapshot = await query.count().get();
     return snapshot.data().count;
   }
@@ -139,6 +147,20 @@ class Invoice {
     if (!doc.exists) {
       throw new Error("Invoice not found.");
     }
+    return { id: doc.id, ...doc.data() };
+  }
+
+  static async getByInvoiceNumber(invoiceNumber) {
+    const snapshot = await invoicesCollection
+      .where("invoiceNumber", "==", invoiceNumber)
+      .get();
+
+    if (snapshot.empty) {
+      return;
+    }
+
+    const doc = snapshot.docs[0];
+
     return { id: doc.id, ...doc.data() };
   }
 

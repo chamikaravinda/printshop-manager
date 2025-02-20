@@ -3,8 +3,19 @@ import { errorHandler, successHandler } from "../utils/response.js";
 
 export const createPurchaseOrder = async (req, res, next) => {
   console.log("Request received to create purchase order", req.body);
-  //TODO: Check PO number already exists
   try {
+    const poForGivenPONumber = await PurchaseOrder.getByPurchaseOrderNumber(
+      req.body.purchaseOrderNumber
+    );
+
+    if (poForGivenPONumber) {
+      console.error(
+        "Purchase order number already exists.",
+        poForGivenPONumber
+      );
+      return next(errorHandler(400, "Purchase order number already exists."));
+    }
+
     const purchaseOrder = await PurchaseOrder.create(req.body);
     res
       .status(201)
@@ -34,21 +45,18 @@ export const getAllPurchaseOrders = async (req, res, next) => {
     const startIndex = parseInt(req.query.startIndex, 10) || 0;
     const limit = parseInt(req.query.limit, 10) || 10;
     const order = req.query.order === "desc" ? "desc" : "asc";
-    const purchaseOrders = await PurchaseOrder.getAll(
-      filters,
-      startIndex,
-      limit,
-      order
+
+    const [purchaseOrders, recordCount] = await Promise.all([
+      PurchaseOrder.getAll(filters, startIndex, limit, order),
+      PurchaseOrder.getCount(filters),
+    ]);
+
+    res.status(200).json(
+      successHandler(200, "Purchase orders retrieved successfully", {
+        purchaseOrders,
+        recordCount,
+      })
     );
-    const recordCount = await PurchaseOrder.getCount(filters);
-    res
-      .status(200)
-      .json(
-        successHandler(200, "Purchase orders retrieved successfully", {
-          purchaseOrders,
-          recordCount,
-        })
-      );
   } catch (error) {
     console.error("Failed to retrieve purchase orders.", error);
     return next(
@@ -61,6 +69,12 @@ export const getPurchaseOrderById = async (req, res, next) => {
   try {
     console.log("Request received to get purchase order", req.params.id);
     const purchaseOrder = await PurchaseOrder.getById(req.params.id);
+
+    if (!purchaseOrder) {
+      console.error("Purchase order not found.", req.params.id);
+      return next(errorHandler(404, "Purchase order not found."));
+    }
+
     res
       .status(200)
       .json(
@@ -79,9 +93,17 @@ export const getPurchaseOrderById = async (req, res, next) => {
 };
 
 export const updatePurchaseOrder = async (req, res, next) => {
-  //TODO: Check PO number already exists (Document ID should be same on new data and existing data)
   console.log("Request received to update purchase order", req.params.id);
   try {
+    const POforGivenPONumber = await PurchaseOrder.getByPurchaseOrderNumber(
+      req.body.purchaseOrderNumber
+    );
+
+    if (POforGivenPONumber && POforGivenPONumber.id !== req.params.id) {
+      console.error("Purchase order number already exists.");
+      return next(errorHandler(400, "Purchase order number already exists."));
+    }
+
     const purchaseOrder = await PurchaseOrder.update(req.params.id, req.body);
     res
       .status(200)
