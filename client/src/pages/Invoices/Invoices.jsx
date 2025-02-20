@@ -150,7 +150,7 @@ const Invoices = () => {
             id="paid"
             className={`${
               filters.paid
-                ? "text-gray-800 dark:text-gray-50"
+                ? "text-gray-900 dark:text-gray-50"
                 : "text-gray-500 dark:text-gray-400"
             } bg-gray-50 border border-gray-300  text-sm rounded-lg 
                 focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 dark:bg-gray-700 

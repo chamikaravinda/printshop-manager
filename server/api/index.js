@@ -4,10 +4,10 @@ import authRoutes from "./routes/auth.route.js";
 import deliveryNoteRoutes from "./routes/delivery-note.routes.js";
 import invoiceRoutes from "./routes/invoice.routes.js";
 import purchaseOrderRoutes from "./routes/purchase-order.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 import cookieParser from "cookie-parser";
 import config from "./config/config.js";
-import { initializeApp, cert } from "firebase-admin/app";
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/delivery-note", deliveryNoteRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/purchase-order", purchaseOrderRoutes);
-
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

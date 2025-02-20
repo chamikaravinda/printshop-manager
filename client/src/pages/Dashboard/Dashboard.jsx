@@ -5,23 +5,36 @@ import { formatCurrencyToLRK } from "../../utils/commonFunction";
 import { differenceInDays, parse } from "date-fns";
 import { FaFileInvoiceDollar } from "react-icons/fa";
 import { GiTakeMyMoney } from "react-icons/gi";
+import { primary_gradient } from "../../utils/commonConstants";
+import { getDasahboardDetails } from "../../actions/dashboard.action";
+import { GrDocumentPerformance } from "react-icons/gr";
+import { GiReceiveMoney } from "react-icons/gi";
+import { MdAttachMoney } from "react-icons/md";
 
 export default function Dashboard() {
   const [invoices, setInvoices] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  //TODO: Change itemsPerPage to depends on screen height
+  const [overdueTotal, setoverdueTotal] = useState(0);
+  const [pendingTotal, setPendingTotal] = useState(0);
+
   const itemsPerPage = 10;
   const filters = {
     paid: false,
   };
 
   useEffect(() => {
-    const success = (data) => {
+    const getInvoicesSuccess = (data) => {
       setInvoices(data.invoices);
       setTotalRecords(data.recordCount);
     };
-    getInvoices(0, itemsPerPage, filters, success);
+
+    const getDasahboardDetailsSuccess = (data) => {
+      setoverdueTotal(data.overdueTotal);
+      setPendingTotal(data.unpaidTotal);
+    };
+    getDasahboardDetails(getDasahboardDetailsSuccess);
+    getInvoices(0, itemsPerPage, filters, getInvoicesSuccess);
   }, []);
 
   const handlePageChange = (page) => {
@@ -43,47 +56,51 @@ export default function Dashboard() {
   return (
     <div className="xl:p-20 lg:p-10 flex flex-col overflow-hidden">
       <div className="flex flex-wrap gap-4 pb-4 xl:pb-10 xl:justify-between lg:justify-center">
-        <div className="bg-gray-50 dark:bg-gray-700 shadow-md rounded-lg p-5 w-64 text-center flex items-center">
-          <FaFileInvoiceDollar className="text-gray-700 dark:text-gray-50 text-6xl mr-4" />
+        <div
+          className={`${primary_gradient} shadow-md rounded-lg p-5 w-64 text-center flex items-center`}
+        >
+          <GrDocumentPerformance className="text-gray-50 dark:text-gray-50 text-6xl mr-4" />
           <div>
-            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-50">
+            <h2 className="text-lg font-semibold text-gray-50 dark:text-gray-50">
               Unpaid Invoices
             </h2>
-            <p className="text-3xl font-bold text-gray-700 dark:text-gray-50 mt-2">
+            <p className="text-5xl font-bold text-gray-50 dark:text-gray-50 mt-2">
               {totalRecords}
             </p>
           </div>
         </div>
-        <div className="bg-gray-700 dark:bg-gray-500 shadow-md rounded-lg p-5 w-64 text-center flex items-center">
+        <div className="bg-gray-50 dark:bg-gray-700 shadow-md rounded-lg p-5 w-64 text-center flex items-center">
+          <GiReceiveMoney className="text-gray-700 dark:text-gray-50 text-6xl mr-4" />
+          <div>
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-50">
+              Pending total
+            </h2>
+            <p className="text-xl font-bold text-gray-700 dark:text-gray-50 mt-2">
+              {formatCurrencyToLRK(pendingTotal)}
+            </p>
+          </div>
+        </div>
+        <div
+          className={`${primary_gradient} shadow-md rounded-lg p-5 w-64 text-center flex items-center`}
+        >
           <GiTakeMyMoney className="text-gray-50 dark:text-gray-50 text-6xl mr-4" />
           <div>
             <h2 className="text-lg font-semibold text-gray-50 dark:text-gray-50">
-              Unpaid Total
+              Overdue Total
             </h2>
             <p className="text-xl font-bold text-gray-50 dark:text-gray-50 mt-2">
-              {formatCurrencyToLRK(200000)}
+              {formatCurrencyToLRK(overdueTotal)}
             </p>
           </div>
         </div>
         <div className="bg-gray-50 dark:bg-gray-700 shadow-md rounded-lg p-5 w-64 text-center flex items-center">
-          <FaFileInvoiceDollar className="text-gray-700 dark:text-gray-50 text-6xl mr-4" />
+          <MdAttachMoney className="text-gray-700 dark:text-gray-50 text-6xl mr-4" />
           <div>
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-50">
-              Unpaid Invoices
+              Total to receive
             </h2>
-            <p className="text-3xl font-bold text-gray-700 dark:text-gray-50 mt-2">
-              {totalRecords}
-            </p>
-          </div>
-        </div>
-        <div className="bg-gray-700 dark:bg-gray-500 shadow-md rounded-lg p-5 w-64 text-center flex items-center">
-          <GiTakeMyMoney className="text-gray-50 dark:text-gray-50 text-6xl mr-4" />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-50 dark:text-gray-50">
-              Unpaid Total
-            </h2>
-            <p className="text-xl font-bold text-gray-50 dark:text-gray-50 mt-2">
-              {formatCurrencyToLRK(200000)}
+            <p className="text-xl font-bold text-gray-700 dark:text-gray-50 mt-2">
+              {formatCurrencyToLRK(overdueTotal + pendingTotal)}
             </p>
           </div>
         </div>
